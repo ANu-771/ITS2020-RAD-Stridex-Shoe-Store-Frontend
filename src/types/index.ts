@@ -1,16 +1,28 @@
 export const UserRole = {
+  CUSTOMER: 'CUSTOMER',
   ADMIN: 'ADMIN',
-  USER: 'USER',
-  MANAGER: 'MANAGER',
+  INVENTORY_MANAGER: 'INVENTORY_MANAGER',
 } as const;
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export interface User {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
-  roles: UserRole[];
+  phone?: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    accessToken: string;
+  };
 }
 
 export interface Category {
