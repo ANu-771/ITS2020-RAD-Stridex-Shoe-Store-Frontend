@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import type { FC, MouseEvent } from 'react';
-import { ArrowRight, Sparkles, TrendingUp, Compass, Award, Tag } from 'lucide-react';
+import { ArrowRight, TrendingUp, Compass, Award, Tag } from 'lucide-react';
 import heroShoe from '../assets/home_page_shoe.png';
 import { HeroVideoBackground } from '../components/home/HeroVideoBackground';
 
@@ -98,8 +98,10 @@ export const HomePage: FC = () => {
             {/* ----------------- LEFT COLUMN: HEADLINE, CTAS & STATISTICS ----------------- */}
             <div className="lg:col-span-5 xl:col-span-5 space-y-5 text-center lg:text-left z-10">
               {/* Top Feature Pill */}
-              <div className="inline-flex items-center space-x-2 bg-[#DDF3E2] border border-[#BDECCB] rounded-full px-4 py-1.5 text-xs font-semibold text-[#26352D] tracking-wider uppercase shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-[#59B976]" />
+              <div className="inline-flex items-center space-x-2 bg-[#DDF3E2] border border-[#BDECCB] rounded-full px-3.5 py-1 text-xs font-semibold text-[#26352D] tracking-wider uppercase shadow-xs">
+                <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center p-0.5 border border-[#BDECCB] shrink-0 shadow-2xs">
+                  <img src={heroShoe} alt="Shoe Avatar" className="w-full h-full object-contain -rotate-12" />
+                </span>
                 <span>Next-Gen Footwear Collection</span>
               </div>
 
