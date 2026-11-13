@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import type { FC, MouseEvent } from 'react';
 import { ArrowRight, Sparkles, TrendingUp, Compass, Award, Tag } from 'lucide-react';
 import heroShoe from '../assets/home_page_shoe.png';
+import { HeroVideoBackground } from '../components/home/HeroVideoBackground';
 
 interface CategoryCard {
   title: string;
@@ -87,11 +88,10 @@ export const HomePage: FC = () => {
         ref={heroRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative overflow-hidden bg-gradient-to-b from-[#F2FAF4] via-[#EAF6ED] to-[#F2FAF4] text-[#26352D] pt-10 pb-20 md:pt-14 md:pb-28 border-b border-[#DCEBE0]"
+        className="relative overflow-hidden text-[#26352D] pt-10 pb-20 md:pt-14 md:pb-28 border-b border-[#DCEBE0]"
       >
-        {/* Soft Radial Studio Spotlight Glow behind the Shoe */}
-        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[650px] lg:w-[800px] h-[500px] lg:h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(189,236,203,0.6)_0%,rgba(221,243,226,0.3)_50%,transparent_70%)] pointer-events-none blur-2xl -z-0" />
-        <div className="absolute top-12 left-10 w-80 h-80 rounded-full bg-[#BDECCB]/25 blur-3xl pointer-events-none -z-0" />
+        {/* Cinematic Sneaker Commercial Background Video with Light Green Brand Overlay */}
+        <HeroVideoBackground />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center min-h-[500px] lg:min-h-[580px]">
