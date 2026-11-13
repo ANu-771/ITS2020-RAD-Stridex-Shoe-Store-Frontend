@@ -5,7 +5,7 @@ import { Footer } from '../components/common/Footer';
 
 export const RootLayout: FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F2FAF4] font-sans antialiased text-[#26352D]">
+    <div className="min-h-screen flex flex-col bg-[#F2FAF4] font-sans antialiased text-[#26352D] selection:bg-[#BDECCB] selection:text-[#26352D]">
       <Navbar />
       <main className="flex-1">
         <Outlet />
