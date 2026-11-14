@@ -19,6 +19,7 @@ import { orderService } from '../../services/orderService';
 import type { Order } from '../../services/orderService';
 import { formatLKR } from '../../utils/currency';
 import { useToast } from '../../context/ToastContext';
+import { SimulatedPaymentModal } from '../../components/orders/SimulatedPaymentModal';
 
 export const CheckoutPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -41,6 +42,7 @@ export const CheckoutPage: FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
 
   // Financial calculations
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -111,7 +113,11 @@ export const CheckoutPage: FC = () => {
       if (res.success && res.data) {
         setConfirmedOrder(res.data);
         dispatch(clearCart());
-        showToast('Order confirmed successfully!', 'success');
+        if (res.data.paymentMethod === 'ONLINE_CARD') {
+          setIsPaymentModalOpen(true);
+        } else {
+          showToast('Order confirmed successfully!', 'success');
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err: any) {
@@ -169,12 +175,49 @@ export const CheckoutPage: FC = () => {
               </strong>
             </div>
             <div className="flex space-x-4">
+              <span className="text-[#718078]">Payment Status:</span>
+              <strong
+                className={`font-bold ${
+                  confirmedOrder.paymentStatus === 'PAID'
+                    ? 'text-[#35A866]'
+                    : confirmedOrder.paymentStatus === 'FAILED'
+                    ? 'text-[#E45D5D]'
+                    : 'text-amber-700'
+                }`}
+              >
+                {confirmedOrder.paymentStatus}
+              </strong>
+            </div>
+            <div className="flex space-x-4">
               <span className="text-[#718078]">Final Total:</span>
               <strong className="font-outfit text-sm text-[#26352D] font-extrabold">
                 {formatLKR(confirmedOrder.finalTotal)}
               </strong>
             </div>
           </div>
+
+          {/* Payment Method Notice */}
+          {confirmedOrder.paymentMethod === 'CASH_ON_DELIVERY' ? (
+            <div className="p-3.5 bg-[#DDF3E2]/60 rounded-2xl border border-[#BDECCB] max-w-lg mx-auto text-xs text-[#26352D] flex items-center justify-center space-x-2">
+              <Banknote className="w-4 h-4 text-[#35A866] shrink-0" />
+              <span>
+                <strong>Cash on Delivery (Island-wide):</strong> Please have <strong>{formatLKR(confirmedOrder.finalTotal)}</strong> in Sri Lankan Rupees ready for the courier.
+              </span>
+            </div>
+          ) : confirmedOrder.paymentMethod === 'ONLINE_CARD' && confirmedOrder.paymentStatus !== 'PAID' ? (
+            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 max-w-lg mx-auto text-xs text-amber-800 flex items-center justify-between gap-3">
+              <div className="flex items-center space-x-2">
+                <CreditCard className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Online payment is pending. Use the demo gateway to complete it.</span>
+              </div>
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="px-3 py-1.5 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold rounded-lg shrink-0 cursor-pointer"
+              >
+                Pay Now
+              </button>
+            </div>
+          ) : null}
 
           {/* Delivery Promise */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto pt-2 text-xs">
@@ -199,9 +242,19 @@ export const CheckoutPage: FC = () => {
 
           {/* Action CTAs */}
           <div className="pt-6 border-t border-[#DCEBE0] flex flex-col sm:flex-row items-center justify-center gap-4">
+            {confirmedOrder.paymentMethod === 'ONLINE_CARD' && confirmedOrder.paymentStatus !== 'PAID' && (
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer"
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Open Payment Simulator</span>
+              </button>
+            )}
+
             <Link
               to="/orders"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-[#DDF3E2] text-[#26352D] border border-[#DCEBE0] font-bold text-xs shadow-xs transition-all flex items-center justify-center space-x-2"
             >
               <span>View My Order History</span>
               <ArrowRight className="w-4 h-4" />
@@ -215,6 +268,17 @@ export const CheckoutPage: FC = () => {
             </Link>
           </div>
         </div>
+
+        {/* Embedded Simulated Payment Dialog */}
+        <SimulatedPaymentModal
+          order={confirmedOrder}
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          onPaymentComplete={(updated) => {
+            setConfirmedOrder(updated);
+            setIsPaymentModalOpen(false);
+          }}
+        />
       </div>
     );
   }

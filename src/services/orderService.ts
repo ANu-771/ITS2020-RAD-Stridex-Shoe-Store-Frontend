@@ -22,20 +22,65 @@ export interface CustomerDetails {
   deliveryNotes?: string;
 }
 
+export interface OrderTimeline {
+  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  timestamp: string;
+  title: string;
+  description: string;
+}
+
+export interface PaymentDetails {
+  transactionId?: string;
+  paidAt?: string;
+  simulatedStatus?: string;
+  note?: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
-  userId: string;
+  userId: string | { _id: string; fullName: string; email: string };
   customerDetails: CustomerDetails;
+  deliveryAddress?: string;
   items: OrderItem[];
   subtotal: number;
   deliveryFee: number;
+  totalAmount?: number;
   finalTotal: number;
   paymentMethod: 'CASH_ON_DELIVERY' | 'ONLINE_CARD' | 'BANK_TRANSFER';
-  paymentStatus: 'PENDING' | 'PAID' | 'FAILED';
+  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
   orderStatus: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  stockRestored?: boolean;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  paymentDetails?: PaymentDetails;
+  trackingTimeline?: OrderTimeline[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OrderSummaryMetrics {
+  totalOrders: number;
+  totalRevenue: number;
+  pendingCount: number;
+  confirmedCount: number;
+  processingCount: number;
+  shippedCount: number;
+  deliveredCount: number;
+  cancelledCount: number;
+  codPendingCount: number;
+}
+
+export interface AdminOrdersResponse {
+  success: boolean;
+  data: Order[];
+  summary: OrderSummaryMetrics;
+  pagination: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
 }
 
 export interface CreateOrderPayload {
@@ -48,6 +93,32 @@ export interface CreateOrderPayload {
     quantity: number;
   }>;
   paymentMethod?: 'CASH_ON_DELIVERY' | 'ONLINE_CARD' | 'BANK_TRANSFER';
+}
+
+export interface SimulatePaymentPayload {
+  simulationResult: 'SUCCESS' | 'FAILED' | 'PENDING';
+  cardBrand?: string;
+  last4?: string;
+  notes?: string;
+}
+
+export interface UpdateOrderStatusPayload {
+  orderStatus: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  note?: string;
+}
+
+export interface UpdatePaymentStatusPayload {
+  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  note?: string;
+}
+
+export interface AdminOrdersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  paymentStatus?: string;
+  paymentMethod?: string;
 }
 
 export const orderService = {
@@ -63,6 +134,43 @@ export const orderService = {
 
   getOrderById: async (id: string): Promise<{ success: boolean; data: Order }> => {
     const res = await api.get(`/orders/${id}`);
+    return res.data;
+  },
+
+  simulatePayment: async (
+    orderId: string,
+    payload: SimulatePaymentPayload
+  ): Promise<{ success: boolean; message: string; data: Order }> => {
+    const res = await api.post(`/orders/${orderId}/pay`, payload);
+    return res.data;
+  },
+
+  cancelOrder: async (
+    orderId: string,
+    reason?: string
+  ): Promise<{ success: boolean; message: string; data: Order }> => {
+    const res = await api.post(`/orders/${orderId}/cancel`, { reason });
+    return res.data;
+  },
+
+  getAllOrdersAdmin: async (params?: AdminOrdersParams): Promise<AdminOrdersResponse> => {
+    const res = await api.get('/orders/admin/all', { params });
+    return res.data;
+  },
+
+  updateOrderStatusAdmin: async (
+    orderId: string,
+    payload: UpdateOrderStatusPayload
+  ): Promise<{ success: boolean; message: string; data: Order }> => {
+    const res = await api.patch(`/orders/${orderId}/status`, payload);
+    return res.data;
+  },
+
+  updatePaymentStatusAdmin: async (
+    orderId: string,
+    payload: UpdatePaymentStatusPayload
+  ): Promise<{ success: boolean; message: string; data: Order }> => {
+    const res = await api.patch(`/orders/${orderId}/payment-status`, payload);
     return res.data;
   },
 };

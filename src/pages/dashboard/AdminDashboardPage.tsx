@@ -20,6 +20,7 @@ import { authService } from '../../services/authService';
 import { AdminProductsPage } from '../admin/AdminProductsPage';
 import { AdminCategoriesPage } from '../admin/AdminCategoriesPage';
 import { AdminBrandsPage } from '../admin/AdminBrandsPage';
+import { AdminOrdersPage } from '../admin/AdminOrdersPage';
 
 export const AdminDashboardPage: FC = () => {
   const navigate = useNavigate();
@@ -27,19 +28,19 @@ export const AdminDashboardPage: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAppSelector((state) => state.auth);
 
-  const initialTab = searchParams.get('tab') || 'products';
-  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'brands' | 'overview'>(
+  const initialTab = searchParams.get('tab') || 'orders';
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'categories' | 'brands' | 'overview'>(
     initialTab as any
   );
 
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && ['products', 'categories', 'brands', 'overview'].includes(tab)) {
+    if (tab && ['orders', 'products', 'categories', 'brands', 'overview'].includes(tab)) {
       setActiveTab(tab as any);
     }
   }, [searchParams]);
 
-  const handleTabChange = (tab: 'products' | 'categories' | 'brands' | 'overview') => {
+  const handleTabChange = (tab: 'orders' | 'products' | 'categories' | 'brands' | 'overview') => {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
@@ -94,6 +95,18 @@ export const AdminDashboardPage: FC = () => {
         {/* Navigation Tabs Bar */}
         <div className="bg-white p-2 rounded-2xl border border-[#DCEBE0] shadow-sm flex flex-wrap gap-2 text-xs font-semibold">
           <button
+            onClick={() => handleTabChange('orders')}
+            className={`px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 cursor-pointer ${
+              activeTab === 'orders'
+                ? 'bg-[#72C98A] text-white shadow-sm'
+                : 'text-[#718078] hover:text-[#26352D] hover:bg-[#F2FAF4]'
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span>Orders & Payments</span>
+          </button>
+
+          <button
             onClick={() => handleTabChange('products')}
             className={`px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 cursor-pointer ${
               activeTab === 'products'
@@ -143,6 +156,7 @@ export const AdminDashboardPage: FC = () => {
         </div>
 
         {/* Tab Content Display */}
+        {activeTab === 'orders' && <AdminOrdersPage />}
         {activeTab === 'products' && <AdminProductsPage />}
         {activeTab === 'categories' && <AdminCategoriesPage />}
         {activeTab === 'brands' && <AdminBrandsPage />}
