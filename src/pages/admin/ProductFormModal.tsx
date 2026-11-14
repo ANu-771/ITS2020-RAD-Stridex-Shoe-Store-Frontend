@@ -165,8 +165,13 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
       onSaved();
       onClose();
     } catch (err: any) {
+      const fieldErrors = err.response?.data?.errors;
+      let detailedMsg = err.response?.data?.message;
+      if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+        detailedMsg = fieldErrors.map((e: any) => e.message).join('. ');
+      }
       setErrorMessage(
-        err.response?.data?.message || 'Failed to save product. Please check the inputs.'
+        detailedMsg || 'Failed to save product. Please check the inputs.'
       );
     } finally {
       setIsSubmitting(false);
@@ -230,6 +235,7 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
             <input
               type="text"
               required
+              minLength={2}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Nike Air Max 270 React"
@@ -391,9 +397,13 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block font-semibold text-[#26352D] mb-1">Description *</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block font-semibold text-[#26352D]">Description *</label>
+              <span className="text-[10px] text-[#718078]">Min 5 characters</span>
+            </div>
             <textarea
               required
+              minLength={5}
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
