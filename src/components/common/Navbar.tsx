@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { FC } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import type { FC, FormEvent } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   ShoppingBag, 
   Search, 
@@ -9,20 +9,31 @@ import {
   LogOut, 
   LayoutDashboard, 
   ShieldCheck, 
-  Boxes 
+  Boxes,
+  Heart
 } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '../../utils/constants';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
+import { toggleCartOpen } from '../../store/slices/cartSlice';
 import { authService } from '../../services/authService';
 
 export const Navbar: FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
+
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { items: cartItems } = useAppSelector((state) => state.cart);
+  const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
+
+  const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalWishlistCount = wishlistItems.length;
 
   const handleLogout = async () => {
     try {
@@ -37,16 +48,30 @@ export const Navbar: FC = () => {
     }
   };
 
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setMobileMenuOpen(false);
+    }
+  };
+
+  const isActiveRoute = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <>
       {/* Top subtle announcement micro-bar */}
       <div className="bg-[#DDF3E2] py-1.5 px-4 text-center text-xs tracking-wider text-[#26352D] font-medium border-b border-[#DCEBE0]">
-        Free island-wide express delivery on orders over Rs. 15,000.00 | 100% Authentic Guaranteed
+        Free island-wide express delivery on orders over Rs. 15,000.00 | 100% Authentic Footwear
       </div>
 
       {/* Floating White Rounded Navigation Header */}
-      <header className="sticky top-2 z-50 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto my-2 w-full">
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-[#DCEBE0] shadow-sm px-6 h-18 sm:h-20 flex items-center justify-between transition-all duration-300">
+      <header className="sticky top-2 z-40 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto my-2 w-full">
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-[#DCEBE0] shadow-sm px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between transition-all duration-300">
           {/* Left: Brand Logo & Tagline */}
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex flex-col group">
@@ -61,30 +86,56 @@ export const Navbar: FC = () => {
           </div>
 
           {/* Center: Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
+          <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium">
             <Link
               to="/"
-              className="text-[#26352D] hover:text-[#72C98A] relative py-1 transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full"
+              className={`py-1 transition-colors duration-200 relative ${
+                isActiveRoute('/') 
+                  ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
+                  : 'text-[#718078] hover:text-[#72C98A]'
+              }`}
             >
               Home
             </Link>
             <Link
-              to="/#categories"
-              className="text-[#718078] hover:text-[#72C98A] py-1 transition-colors duration-200"
+              to="/shop"
+              className={`py-1 transition-colors duration-200 relative ${
+                isActiveRoute('/shop') 
+                  ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
+                  : 'text-[#718078] hover:text-[#72C98A]'
+              }`}
             >
-              Categories
+              Shop All
             </Link>
             <Link
-              to="/#featured"
-              className="text-[#718078] hover:text-[#72C98A] py-1 transition-colors duration-200"
+              to="/brands"
+              className={`py-1 transition-colors duration-200 relative ${
+                isActiveRoute('/brands') 
+                  ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
+                  : 'text-[#718078] hover:text-[#72C98A]'
+              }`}
             >
-              Featured
+              Brands
             </Link>
             <Link
-              to="/#offers"
-              className="text-[#718078] hover:text-[#72C98A] py-1 transition-colors duration-200"
+              to="/about"
+              className={`py-1 transition-colors duration-200 relative ${
+                isActiveRoute('/about') 
+                  ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
+                  : 'text-[#718078] hover:text-[#72C98A]'
+              }`}
             >
-              Offers
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className={`py-1 transition-colors duration-200 relative ${
+                isActiveRoute('/contact') 
+                  ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
+                  : 'text-[#718078] hover:text-[#72C98A]'
+              }`}
+            >
+              Contact
             </Link>
 
             {/* Quick Portal Shortcuts for Admin or Inventory Manager */}
@@ -109,25 +160,68 @@ export const Navbar: FC = () => {
             )}
           </nav>
 
-          {/* Right: Actions, Cart & Auth */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <button
-              type="button"
-              aria-label="Search shoes"
-              className="p-2 text-[#26352D] hover:text-[#72C98A] hover:bg-[#F2FAF4] rounded-full transition-all"
-            >
-              <Search className="w-5 h-5" />
-            </button>
+          {/* Right: Actions, Search, Wishlist, Cart & Auth */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Inline Quick Search Button/Form */}
+            {searchOpen ? (
+              <form onSubmit={handleSearchSubmit} className="relative flex items-center animate-in fade-in zoom-in-95 duration-200">
+                <input
+                  type="text"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search shoes, brands..."
+                  className="w-40 sm:w-60 px-3.5 py-1.5 pr-8 text-xs rounded-xl bg-[#F2FAF4] border border-[#72C98A] focus:outline-none focus:ring-2 focus:ring-[#72C98A]/30 text-[#26352D] placeholder-[#718078]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(false)}
+                  className="absolute right-2 text-[#718078] hover:text-[#26352D]"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search shoes"
+                className="p-2 text-[#26352D] hover:text-[#72C98A] hover:bg-[#F2FAF4] rounded-full transition-all"
+                title="Search collection"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            )}
 
+            {/* Wishlist Link with Badge */}
+            <Link
+              to="/shop?filter=wishlist"
+              aria-label="Wishlist"
+              className="relative p-2 text-[#26352D] hover:text-[#72C98A] hover:bg-[#F2FAF4] rounded-full transition-all"
+              title="Saved Shoes"
+            >
+              <Heart className="w-5 h-5" />
+              {totalWishlistCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-[#72C98A] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
+                  {totalWishlistCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Shopping Cart Drawer Trigger */}
             <button
               type="button"
+              onClick={() => dispatch(toggleCartOpen())}
               aria-label="Shopping Cart"
-              className="relative p-2 text-[#26352D] hover:text-[#72C98A] hover:bg-[#F2FAF4] rounded-full transition-all"
+              className="relative p-2 text-[#26352D] hover:text-[#72C98A] hover:bg-[#F2FAF4] rounded-full transition-all cursor-pointer"
+              title="Shopping Cart"
             >
               <ShoppingBag className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-4 h-4 bg-[#72C98A] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
-                0
-              </span>
+              {totalCartCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-[#72C98A] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
+                  {totalCartCount}
+                </span>
+              )}
             </button>
 
             {/* User Account / Auth Area */}
@@ -181,6 +275,15 @@ export const Navbar: FC = () => {
                       </Link>
                     )}
 
+                    <Link
+                      to="/shop"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
+                    >
+                      <ShoppingBag className="w-4 h-4 text-[#72C98A]" />
+                      <span>Browse Footwear</span>
+                    </Link>
+
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center space-x-2 px-4 py-2.5 text-[#E45D5D] hover:bg-[#E45D5D]/10 transition-colors border-t border-[#DCEBE0]"
@@ -212,7 +315,7 @@ export const Navbar: FC = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-[#26352D] hover:text-[#72C98A] rounded-lg transition-colors"
+              className="lg:hidden p-2 text-[#26352D] hover:text-[#72C98A] rounded-lg transition-colors"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -221,34 +324,62 @@ export const Navbar: FC = () => {
 
         {/* Mobile dropdown menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-2 p-4 bg-white/98 backdrop-blur-md rounded-2xl border border-[#DCEBE0] shadow-lg space-y-2">
+          <div className="lg:hidden mt-2 p-4 bg-white/98 backdrop-blur-md rounded-2xl border border-[#DCEBE0] shadow-lg space-y-2">
+            {/* Search Input for Mobile */}
+            <form onSubmit={handleSearchSubmit} className="mb-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search footwear collection..."
+                  className="w-full px-3.5 py-2 pl-9 text-xs rounded-xl bg-[#F2FAF4] border border-[#DCEBE0] focus:border-[#72C98A] focus:outline-none text-[#26352D]"
+                />
+                <Search className="w-4 h-4 text-[#718078] absolute left-3 top-2.5" />
+              </div>
+            </form>
+
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-xl text-base font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+              className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
               Home
             </Link>
             <Link
-              to="/#categories"
+              to="/shop"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-xl text-base font-medium text-[#718078] hover:bg-[#F2FAF4]"
+              className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
-              Categories
+              Shop All Footwear
             </Link>
             <Link
-              to="/#featured"
+              to="/brands"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-xl text-base font-medium text-[#718078] hover:bg-[#F2FAF4]"
+              className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
-              Featured
+              Featured Brands
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+            >
+              About STRIDEX
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+            >
+              Contact & Showroom
             </Link>
 
             {isAuthenticated && user?.role === 'ADMIN' && (
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-xl text-base font-semibold text-[#72C98A] hover:bg-[#F2FAF4]"
+                className="block px-3 py-2 rounded-xl text-sm font-semibold text-[#72C98A] hover:bg-[#F2FAF4]"
               >
                 Admin Dashboard
               </Link>
@@ -258,7 +389,7 @@ export const Navbar: FC = () => {
               <Link
                 to="/inventory"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-xl text-base font-semibold text-[#72C98A] hover:bg-[#F2FAF4]"
+                className="block px-3 py-2 rounded-xl text-sm font-semibold text-[#72C98A] hover:bg-[#F2FAF4]"
               >
                 Inventory Dashboard
               </Link>

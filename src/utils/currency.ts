@@ -23,3 +23,8 @@ export const parseLKR = (input: string | number): number => {
   const parsed = parseFloat(cleaned);
   return isNaN(parsed) ? 0 : parsed;
 };
+
+export const calculateDiscountPercentage = (basePrice: number, discountPrice: number): number => {
+  if (!basePrice || !discountPrice || discountPrice >= basePrice) return 0;
+  return Math.round(((basePrice - discountPrice) / basePrice) * 100);
+};

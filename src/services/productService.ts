@@ -12,6 +12,8 @@ export interface ProductQueryParams {
   active?: boolean;
   minPrice?: number;
   maxPrice?: number;
+  size?: number | string;
+  color?: string;
   sort?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'name_asc';
 }
 

@@ -2,6 +2,12 @@ import type { FC } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { RootLayout } from '../layouts/RootLayout';
 import { HomePage } from '../pages/HomePage';
+import { ShopPage } from '../pages/shop/ShopPage';
+import { ProductDetailsPage } from '../pages/shop/ProductDetailsPage';
+import { BrandsPage } from '../pages/brands/BrandsPage';
+import { CategoryPage } from '../pages/category/CategoryPage';
+import { AboutPage } from '../pages/about/AboutPage';
+import { ContactPage } from '../pages/contact/ContactPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
@@ -14,8 +20,16 @@ export const AppRoutes: FC = () => {
   return (
     <Routes>
       <Route path="/" element={<RootLayout />}>
-        {/* Public Routes */}
+        {/* Public Storefront Routes */}
         <Route index element={<HomePage />} />
+        <Route path="shop" element={<ShopPage />} />
+        <Route path="product/:slug" element={<ProductDetailsPage />} />
+        <Route path="brands" element={<BrandsPage />} />
+        <Route path="category/:slug" element={<CategoryPage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
+
+        {/* Authentication Routes */}
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
 
