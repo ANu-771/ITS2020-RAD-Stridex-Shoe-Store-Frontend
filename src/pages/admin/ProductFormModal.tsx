@@ -105,10 +105,12 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
     try {
       const url = await uploadService.uploadSingle(file);
       setImages((prev) => [...prev, url]);
-    } catch {
-      setErrorMessage('Failed to upload image. Please enter an image URL instead.');
+    } catch (err: any) {
+      const serverMsg = err.response?.data?.message || err.message;
+      setErrorMessage(serverMsg || 'Failed to upload image. Please enter an image URL instead.');
     } finally {
       setIsUploading(false);
+      if (e.target) e.target.value = '';
     }
   };
 
