@@ -30,20 +30,75 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
+  image?: string;
   imageUrl?: string;
+  isActive: boolean;
   productCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface ShoeProduct {
+export interface Brand {
   id: string;
   name: string;
-  brand: string;
-  category: string;
-  price: number;
-  discountPrice?: number;
-  sizes: number[];
-  colors: string[];
+  slug: string;
+  description?: string;
+  logo?: string;
+  isActive: boolean;
+  productCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  SKU: string;
+  size: number | string;
+  color: string;
   stockQuantity: number;
+  reservedQuantity: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type ProductGender = 'MEN' | 'WOMEN' | 'UNISEX' | 'KIDS';
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  brandId: Brand | string;
+  categoryId: Category | string;
+  basePrice: number; // In Sri Lankan Rupees (LKR)
+  discountPrice: number; // In Sri Lankan Rupees (LKR)
   images: string[];
-  featured?: boolean;
+  gender: ProductGender;
+  material?: string;
+  isFeatured: boolean;
+  isActive: boolean;
+  variants?: ProductVariant[];
+  totalStock?: number;
+  variantCount?: number;
+  availableSizes?: (number | string)[];
+  availableColors?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: Pagination;
 }
