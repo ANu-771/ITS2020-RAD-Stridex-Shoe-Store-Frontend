@@ -41,7 +41,7 @@ export const Navbar: FC = () => {
     <>
       {/* Top subtle announcement micro-bar */}
       <div className="bg-[#DDF3E2] py-1.5 px-4 text-center text-xs tracking-wider text-[#26352D] font-medium border-b border-[#DCEBE0]">
-        Free express delivery on orders over $120 | 100% Authentic Guaranteed
+        Free island-wide express delivery on orders over Rs. 15,000.00 | 100% Authentic Guaranteed
       </div>
 
       {/* Floating White Rounded Navigation Header */}
