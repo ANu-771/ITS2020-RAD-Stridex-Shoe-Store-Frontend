@@ -118,6 +118,16 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
     e.preventDefault();
     setErrorMessage(null);
 
+    if (!name.trim() || name.trim().length < 2) {
+      setErrorMessage('Product title must be at least 2 characters long');
+      return;
+    }
+
+    if (!description.trim() || description.trim().length < 5) {
+      setErrorMessage('Product description must be at least 5 characters long');
+      return;
+    }
+
     const numBase = Number(basePrice);
     const numDiscount = Number(discountPrice) || 0;
 
@@ -166,7 +176,7 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
       onClose();
     } catch (err: any) {
       const fieldErrors = err.response?.data?.errors;
-      let detailedMsg = err.response?.data?.message;
+      let detailedMsg = err.response?.data?.error || err.response?.data?.message;
       if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
         detailedMsg = fieldErrors.map((e: any) => e.message).join('. ');
       }

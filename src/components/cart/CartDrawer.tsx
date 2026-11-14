@@ -1,24 +1,33 @@
 import type { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import {
   setCartOpen,
-  updateQuantity,
-  removeFromCart,
+  updateQuantityAsync,
+  removeFromCartAsync,
 } from '../../store/slices/cartSlice';
 import { formatLKR } from '../../utils/currency';
 
 export const CartDrawer: FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { items, isOpen } = useAppSelector((state) => state.cart);
 
   if (!isOpen) return null;
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const FREE_SHIPPING_THRESHOLD = 15000; // in LKR
+  const STANDARD_DELIVERY_FEE = 650; // in LKR
   const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
   const remainingForFree = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : STANDARD_DELIVERY_FEE;
+  const finalTotal = subtotal + deliveryFee;
+
+  const handleCheckoutClick = () => {
+    dispatch(setCartOpen(false));
+    navigate('/checkout');
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
@@ -120,7 +129,9 @@ export const CartDrawer: FC = () => {
                           {item.brandName}
                         </span>
                         <button
-                          onClick={() => dispatch(removeFromCart(item.id))}
+                          onClick={() =>
+                            dispatch(removeFromCartAsync({ id: item.id, itemId: item.itemId }))
+                          }
                           className="text-[#718078] hover:text-[#E45D5D] transition-colors p-0.5"
                           title="Remove item"
                         >
@@ -150,7 +161,13 @@ export const CartDrawer: FC = () => {
                       <div className="flex items-center space-x-1.5 bg-[#F2FAF4] border border-[#DCEBE0] rounded-lg p-0.5">
                         <button
                           onClick={() =>
-                            dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))
+                            dispatch(
+                              updateQuantityAsync({
+                                id: item.id,
+                                itemId: item.itemId,
+                                quantity: item.quantity - 1,
+                              })
+                            )
                           }
                           className="p-1 hover:bg-white rounded text-[#26352D] transition-colors"
                           title="Decrease quantity"
@@ -162,7 +179,13 @@ export const CartDrawer: FC = () => {
                         </span>
                         <button
                           onClick={() =>
-                            dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))
+                            dispatch(
+                              updateQuantityAsync({
+                                id: item.id,
+                                itemId: item.itemId,
+                                quantity: item.quantity + 1,
+                              })
+                            )
                           }
                           disabled={item.quantity >= item.maxStock}
                           className="p-1 hover:bg-white rounded text-[#26352D] disabled:opacity-30 transition-colors"
@@ -191,28 +214,35 @@ export const CartDrawer: FC = () => {
                 <div className="flex justify-between">
                   <span>Island-wide Delivery</span>
                   <span className="font-medium text-[#35A866]">
-                    {subtotal >= FREE_SHIPPING_THRESHOLD ? 'FREE' : formatLKR(450)}
+                    {deliveryFee === 0 ? 'FREE' : formatLKR(deliveryFee)}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-[#DCEBE0] pt-2 text-sm">
                   <strong className="text-[#26352D] font-outfit">Estimated Total (LKR)</strong>
                   <strong className="text-[#26352D] font-outfit text-base">
-                    {formatLKR(subtotal + (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 450))}
+                    {formatLKR(finalTotal)}
                   </strong>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  alert('Thank you for choosing STRIDEX! Checkout integration is ready for Phase 5.');
-                  dispatch(setCartOpen(false));
-                }}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-lg shadow-green-500/25 transition-all flex items-center justify-center space-x-2"
-              >
-                <span>Proceed to Secure Checkout</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              <div className="space-y-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleCheckoutClick}
+                  className="w-full py-3.5 px-4 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-lg shadow-green-500/25 transition-all flex items-center justify-center space-x-2 cursor-pointer"
+                >
+                  <span>Proceed to Secure Checkout</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <Link
+                  to="/cart"
+                  onClick={() => dispatch(setCartOpen(false))}
+                  className="w-full py-2 px-4 rounded-xl border border-[#DCEBE0] hover:border-[#72C98A] text-[#26352D] text-xs font-semibold flex items-center justify-center transition-colors"
+                >
+                  View Full Bag & Delivery Details
+                </Link>
+              </div>
 
               <div className="text-center text-[10px] text-[#718078] flex items-center justify-center space-x-1">
                 <ShieldCheck className="w-3 h-3 text-[#72C98A]" />

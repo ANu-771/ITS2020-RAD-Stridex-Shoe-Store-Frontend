@@ -3,14 +3,18 @@ import type { FC, FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 import { authService } from '../../services/authService';
-import { useAppDispatch } from '../../hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { setCredentials } from '../../store/slices/authSlice';
+import { syncCartWithServer } from '../../store/slices/cartSlice';
+import { syncWishlistWithServer } from '../../store/slices/wishlistSlice';
 import { APP_NAME } from '../../utils/constants';
 
 export const LoginPage: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const { items: cartItems } = useAppSelector((state) => state.cart);
+  const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,6 +41,10 @@ export const LoginPage: FC = () => {
 
       // Update Redux state
       dispatch(setCredentials({ user, token: accessToken }));
+
+      // Synchronize local guest cart and wishlist with MongoDB
+      dispatch(syncCartWithServer(cartItems));
+      dispatch(syncWishlistWithServer(wishlistItems.map((w) => w.productId)));
 
       // Redirect by role
       if (from) {

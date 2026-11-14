@@ -18,8 +18,8 @@ import { productService } from '../../services/productService';
 import type { Product, Brand, Category, ProductVariant } from '../../types';
 import { formatLKR, calculateDiscountPercentage } from '../../utils/currency';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
-import { addToCart } from '../../store/slices/cartSlice';
-import { toggleWishlist } from '../../store/slices/wishlistSlice';
+import { addToCartAsync } from '../../store/slices/cartSlice';
+import { toggleWishlistAsync } from '../../store/slices/wishlistSlice';
 import { useToast } from '../../context/ToastContext';
 import { ProductCard } from '../../components/shop/ProductCard';
 
@@ -144,10 +144,10 @@ export const ProductDetailsPage: FC = () => {
     }
 
     dispatch(
-      addToCart({
+      addToCartAsync({
         id: `${product.id}-${selectedSize}-${selectedColor}`,
         productId: product.id,
-        variantId: activeVariant?.id,
+        variantId: activeVariant?.id || (activeVariant as any)?._id,
         name: product.name,
         slug: product.slug,
         image: selectedImage || (product.images?.[0] ?? ''),
@@ -167,7 +167,7 @@ export const ProductDetailsPage: FC = () => {
   const handleWishlistToggle = () => {
     if (!product) return;
     dispatch(
-      toggleWishlist({
+      toggleWishlistAsync({
         productId: product.id,
         name: product.name,
         slug: product.slug,

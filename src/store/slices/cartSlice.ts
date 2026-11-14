@@ -1,8 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { cartService } from '../../services/cartService';
+import type { CartServerItem, AddToCartPayload } from '../../services/cartService';
 
 export interface CartItem {
   id: string; // Composite key: `${productId}-${size}-${color}`
+  itemId?: string; // MongoDB Cart item _id
   productId: string;
   variantId?: string;
   name: string;
@@ -20,6 +23,8 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   isOpen: boolean; // Controls slide-over cart drawer
+  isLoading: boolean;
+  error: string | null;
 }
 
 const loadCartFromStorage = (): CartItem[] => {
@@ -43,7 +48,130 @@ const saveCartToStorage = (items: CartItem[]) => {
 const initialState: CartState = {
   items: loadCartFromStorage(),
   isOpen: false,
+  isLoading: false,
+  error: null,
 };
+
+// Async Thunk: Fetch Cart from MongoDB
+export const fetchServerCart = createAsyncThunk(
+  'cart/fetchServerCart',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await cartService.getCart();
+      if (res.success) {
+        return res.data.items;
+      }
+      return rejectWithValue('Failed to retrieve cart');
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to retrieve cart');
+    }
+  }
+);
+
+// Async Thunk: Sync local cart to server upon login
+export const syncCartWithServer = createAsyncThunk(
+  'cart/syncCartWithServer',
+  async (items: CartItem[], { rejectWithValue }) => {
+    try {
+      const payload: AddToCartPayload[] = items.map((item) => ({
+        productId: item.productId,
+        variantId: item.variantId && /^[0-9a-fA-F]{24}$/.test(item.variantId) ? item.variantId : undefined,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+      }));
+
+      if (payload.length === 0) {
+        const res = await cartService.getCart();
+        return res.data.items;
+      }
+
+      const res = await cartService.syncCart(payload);
+      if (res.success) {
+        return res.data.items;
+      }
+      return rejectWithValue('Failed to sync cart');
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to sync cart');
+    }
+  }
+);
+
+// Async Thunk: Add to Cart (syncs with server)
+export const addToCartAsync = createAsyncThunk(
+  'cart/addToCartAsync',
+  async (item: CartItem, { rejectWithValue }) => {
+    try {
+      const payload: AddToCartPayload = {
+        productId: item.productId,
+        variantId: item.variantId && /^[0-9a-fA-F]{24}$/.test(item.variantId) ? item.variantId : undefined,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+      };
+      const res = await cartService.addItem(payload);
+      if (res.success) {
+        return { serverItems: res.data.items, fallbackItem: item };
+      }
+      return { fallbackItem: item };
+    } catch (err: any) {
+      // Return fallback so local cart still works even if offline
+      return rejectWithValue(err.response?.data?.message || 'Failed to add item to server cart');
+    }
+  }
+);
+
+// Async Thunk: Update Quantity
+export const updateQuantityAsync = createAsyncThunk(
+  'cart/updateQuantityAsync',
+  async (
+    { id, itemId, quantity }: { id: string; itemId?: string; quantity: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      if (itemId) {
+        const res = await cartService.updateQuantity(itemId, quantity);
+        if (res.success) {
+          return { serverItems: res.data.items, id, quantity };
+        }
+      }
+      return { id, quantity };
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to update quantity');
+    }
+  }
+);
+
+// Async Thunk: Remove Item
+export const removeFromCartAsync = createAsyncThunk(
+  'cart/removeFromCartAsync',
+  async ({ id, itemId }: { id: string; itemId?: string }, { rejectWithValue }) => {
+    try {
+      if (itemId) {
+        const res = await cartService.removeItem(itemId);
+        if (res.success) {
+          return { serverItems: res.data.items, id };
+        }
+      }
+      return { id };
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to remove item');
+    }
+  }
+);
+
+// Async Thunk: Clear Cart
+export const clearCartAsync = createAsyncThunk(
+  'cart/clearCartAsync',
+  async () => {
+    try {
+      await cartService.clearCart();
+      return [];
+    } catch {
+      return [];
+    }
+  }
+);
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -58,7 +186,7 @@ export const cartSlice = createSlice({
         state.items.push(action.payload);
       }
       saveCartToStorage(state.items);
-      state.isOpen = true; // Automatically open cart drawer when adding
+      state.isOpen = true;
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
@@ -88,6 +216,155 @@ export const cartSlice = createSlice({
     setCartOpen: (state, action: PayloadAction<boolean>) => {
       state.isOpen = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    // fetchServerCart
+    builder.addCase(fetchServerCart.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchServerCart.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.items = (action.payload as CartServerItem[]).map((i) => ({
+        id: i.id,
+        itemId: i.itemId,
+        productId: i.productId,
+        variantId: i.variantId,
+        name: i.name,
+        slug: i.slug,
+        image: i.image,
+        brandName: i.brandName,
+        size: i.size,
+        color: i.color,
+        price: i.price,
+        originalPrice: i.originalPrice,
+        quantity: i.quantity,
+        maxStock: i.maxStock,
+      }));
+      saveCartToStorage(state.items);
+    });
+    builder.addCase(fetchServerCart.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
+
+    // syncCartWithServer
+    builder.addCase(syncCartWithServer.fulfilled, (state, action) => {
+      state.items = (action.payload as CartServerItem[]).map((i) => ({
+        id: i.id,
+        itemId: i.itemId,
+        productId: i.productId,
+        variantId: i.variantId,
+        name: i.name,
+        slug: i.slug,
+        image: i.image,
+        brandName: i.brandName,
+        size: i.size,
+        color: i.color,
+        price: i.price,
+        originalPrice: i.originalPrice,
+        quantity: i.quantity,
+        maxStock: i.maxStock,
+      }));
+      saveCartToStorage(state.items);
+    });
+
+    // addToCartAsync
+    builder.addCase(addToCartAsync.fulfilled, (state, action) => {
+      const payload = action.payload as any;
+      if (payload.serverItems) {
+        state.items = payload.serverItems.map((i: CartServerItem) => ({
+          id: i.id,
+          itemId: i.itemId,
+          productId: i.productId,
+          variantId: i.variantId,
+          name: i.name,
+          slug: i.slug,
+          image: i.image,
+          brandName: i.brandName,
+          size: i.size,
+          color: i.color,
+          price: i.price,
+          originalPrice: i.originalPrice,
+          quantity: i.quantity,
+          maxStock: i.maxStock,
+        }));
+      } else if (payload.fallbackItem) {
+        const existing = state.items.find((item) => item.id === payload.fallbackItem.id);
+        if (existing) {
+          existing.quantity = Math.min(existing.quantity + payload.fallbackItem.quantity, existing.maxStock || 99);
+        } else {
+          state.items.push(payload.fallbackItem);
+        }
+      }
+      saveCartToStorage(state.items);
+      state.isOpen = true;
+    });
+
+    // updateQuantityAsync
+    builder.addCase(updateQuantityAsync.fulfilled, (state, action) => {
+      const payload = action.payload as any;
+      if (payload.serverItems) {
+        state.items = payload.serverItems.map((i: CartServerItem) => ({
+          id: i.id,
+          itemId: i.itemId,
+          productId: i.productId,
+          variantId: i.variantId,
+          name: i.name,
+          slug: i.slug,
+          image: i.image,
+          brandName: i.brandName,
+          size: i.size,
+          color: i.color,
+          price: i.price,
+          originalPrice: i.originalPrice,
+          quantity: i.quantity,
+          maxStock: i.maxStock,
+        }));
+      } else {
+        const item = state.items.find((i) => i.id === payload.id);
+        if (item) {
+          if (payload.quantity <= 0) {
+            state.items = state.items.filter((i) => i.id !== payload.id);
+          } else {
+            item.quantity = Math.min(payload.quantity, item.maxStock || 99);
+          }
+        }
+      }
+      saveCartToStorage(state.items);
+    });
+
+    // removeFromCartAsync
+    builder.addCase(removeFromCartAsync.fulfilled, (state, action) => {
+      const payload = action.payload as any;
+      if (payload.serverItems) {
+        state.items = payload.serverItems.map((i: CartServerItem) => ({
+          id: i.id,
+          itemId: i.itemId,
+          productId: i.productId,
+          variantId: i.variantId,
+          name: i.name,
+          slug: i.slug,
+          image: i.image,
+          brandName: i.brandName,
+          size: i.size,
+          color: i.color,
+          price: i.price,
+          originalPrice: i.originalPrice,
+          quantity: i.quantity,
+          maxStock: i.maxStock,
+        }));
+      } else {
+        state.items = state.items.filter((item) => item.id !== payload.id);
+      }
+      saveCartToStorage(state.items);
+    });
+
+    // clearCartAsync
+    builder.addCase(clearCartAsync.fulfilled, (state) => {
+      state.items = [];
+      saveCartToStorage([]);
+    });
   },
 });
 

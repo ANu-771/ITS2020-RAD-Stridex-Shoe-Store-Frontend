@@ -8,6 +8,10 @@ import { BrandsPage } from '../pages/brands/BrandsPage';
 import { CategoryPage } from '../pages/category/CategoryPage';
 import { AboutPage } from '../pages/about/AboutPage';
 import { ContactPage } from '../pages/contact/ContactPage';
+import { CartPage } from '../pages/cart/CartPage';
+import { WishlistPage } from '../pages/wishlist/WishlistPage';
+import { CheckoutPage } from '../pages/checkout/CheckoutPage';
+import { OrdersPage } from '../pages/orders/OrdersPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
@@ -28,6 +32,10 @@ export const AppRoutes: FC = () => {
         <Route path="category/:slug" element={<CategoryPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="wishlist" element={<WishlistPage />} />
+        <Route path="checkout" element={<CheckoutPage />} />
+        <Route path="orders" element={<OrdersPage />} />
 
         {/* Authentication Routes */}
         <Route path="login" element={<LoginPage />} />

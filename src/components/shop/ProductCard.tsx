@@ -4,8 +4,8 @@ import { Heart, Eye, ShoppingBag } from 'lucide-react';
 import type { Product, Brand } from '../../types';
 import { formatLKR, calculateDiscountPercentage } from '../../utils/currency';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
-import { toggleWishlist } from '../../store/slices/wishlistSlice';
-import { addToCart } from '../../store/slices/cartSlice';
+import { toggleWishlistAsync } from '../../store/slices/wishlistSlice';
+import { addToCartAsync } from '../../store/slices/cartSlice';
 import { useToast } from '../../context/ToastContext';
 
 interface ProductCardProps {
@@ -40,7 +40,7 @@ export const ProductCard: FC<ProductCardProps> = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     dispatch(
-      toggleWishlist({
+      toggleWishlistAsync({
         productId: product.id,
         name: product.name,
         slug: product.slug,
@@ -68,15 +68,16 @@ export const ProductCard: FC<ProductCardProps> = ({ product }) => {
 
     // Default to first variant if present, or create standard selection
     const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+    const selectedVariantId = firstVariant ? ((firstVariant as any).id || (firstVariant as any)._id) : undefined;
     const selectedSize = firstVariant ? firstVariant.size : (product.availableSizes?.[0] || '42');
     const selectedColor = firstVariant ? firstVariant.color : (product.availableColors?.[0] || 'Standard');
     const maxStock = firstVariant ? firstVariant.stockQuantity : (product.totalStock || 10);
 
     dispatch(
-      addToCart({
+      addToCartAsync({
         id: `${product.id}-${selectedSize}-${selectedColor}`,
         productId: product.id,
-        variantId: firstVariant?.id,
+        variantId: selectedVariantId,
         name: product.name,
         slug: product.slug,
         image: defaultImage,

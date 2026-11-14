@@ -10,7 +10,8 @@ import {
   LayoutDashboard, 
   ShieldCheck, 
   Boxes,
-  Heart
+  Heart,
+  Package
 } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '../../utils/constants';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
@@ -195,7 +196,7 @@ export const Navbar: FC = () => {
 
             {/* Wishlist Link with Badge */}
             <Link
-              to="/shop?filter=wishlist"
+              to="/wishlist"
               aria-label="Wishlist"
               className="relative p-2 text-[#26352D] hover:text-[#72C98A] hover:bg-[#F2FAF4] rounded-full transition-all"
               title="Saved Shoes"
@@ -274,6 +275,24 @@ export const Navbar: FC = () => {
                         <span>Inventory Dashboard</span>
                       </Link>
                     )}
+
+                    <Link
+                      to="/orders"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
+                    >
+                      <Package className="w-4 h-4 text-[#72C98A]" />
+                      <span>My Orders</span>
+                    </Link>
+
+                    <Link
+                      to="/wishlist"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
+                    >
+                      <Heart className="w-4 h-4 text-[#72C98A]" />
+                      <span>Saved Wishlist</span>
+                    </Link>
 
                     <Link
                       to="/shop"
@@ -368,12 +387,22 @@ export const Navbar: FC = () => {
               About STRIDEX
             </Link>
             <Link
-              to="/contact"
+              to="/wishlist"
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
-              Contact & Showroom
+              Saved Wishlist ({totalWishlistCount})
             </Link>
+
+            {isAuthenticated && (
+              <Link
+                to="/orders"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+              >
+                My Orders
+              </Link>
+            )}
 
             {isAuthenticated && user?.role === 'ADMIN' && (
               <Link
