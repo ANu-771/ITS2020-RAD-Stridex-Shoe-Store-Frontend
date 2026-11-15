@@ -89,6 +89,10 @@ export const CheckoutPage: FC = () => {
   const finalTotal = Math.max(0, grossTotal - voucherDiscount);
 
   const handleApplyVoucher = async () => {
+    if (!isAuthenticated) {
+      showToast('Please sign in to apply or redeem a gift voucher', 'error');
+      return;
+    }
     if (!voucherInput.trim()) {
       showToast('Please enter a voucher code', 'error');
       return;

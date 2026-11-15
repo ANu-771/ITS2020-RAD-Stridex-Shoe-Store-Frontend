@@ -88,10 +88,26 @@ export interface BankPaymentInstructions {
   note: string;
 }
 
+export interface GiftVoucherPurchasedGift {
+  _id: string;
+  originalValue: number;
+  recipientName: string;
+  recipientEmail: string;
+  personalMessage?: string;
+  purchaseStatus: VoucherPurchaseStatus;
+  paymentStatus: VoucherPaymentStatus;
+  status: VoucherStatus;
+  isIssued: boolean;
+  issuedAt?: string;
+  createdAt: string;
+}
+
 export interface CustomerVouchersResponse {
-  issuedVouchers: GiftVoucher[];
+  issuedVouchers: GiftVoucher[]; // Vouchers redeemable by this customer (as recipient)
+  purchasedGifts: GiftVoucherPurchasedGift[]; // Vouchers purchased by this user for others
   pendingPurchases: GiftVoucher[];
   totalIssued: number;
+  totalPurchasedGifts: number;
   totalPending: number;
   bankInstructions: BankPaymentInstructions;
 }

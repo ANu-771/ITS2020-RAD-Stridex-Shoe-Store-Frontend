@@ -15,13 +15,14 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { giftVoucherService } from '../../services/giftVoucherService';
-import type { GiftVoucher } from '../../services/giftVoucherService';
+import type { GiftVoucher, GiftVoucherPurchasedGift } from '../../services/giftVoucherService';
 import { formatLKR } from '../../utils/currency';
 import { useToast } from '../../context/ToastContext';
 
 export const MyVouchersPage: FC = () => {
   const { showToast } = useToast();
   const [issuedVouchers, setIssuedVouchers] = useState<GiftVoucher[]>([]);
+  const [purchasedGifts, setPurchasedGifts] = useState<GiftVoucherPurchasedGift[]>([]);
   const [pendingPurchases, setPendingPurchases] = useState<GiftVoucher[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -32,6 +33,7 @@ export const MyVouchersPage: FC = () => {
       const res = await giftVoucherService.getMyVouchers();
       if (res.success && res.data) {
         setIssuedVouchers(res.data.issuedVouchers || []);
+        setPurchasedGifts(res.data.purchasedGifts || []);
         setPendingPurchases(res.data.pendingPurchases || []);
       }
     } catch (err: any) {
@@ -92,17 +94,17 @@ export const MyVouchersPage: FC = () => {
         </div>
 
         {/* ========================================================= */}
-        {/* SECTION 1: ISSUED & ACTIVE DIGITAL VOUCHERS */}
+        {/* SECTION 1: ISSUED & REDEEMABLE VOUCHERS (RECIPIENT-ONLY)  */}
         {/* ========================================================= */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-outfit text-xl font-bold text-[#26352D] flex items-center space-x-2">
                 <CheckCircle2 className="w-5 h-5 text-[#72C98A]" />
-                <span>Issued Digital Vouchers ({issuedVouchers.length})</span>
+                <span>My Redeemable Vouchers ({issuedVouchers.length})</span>
               </h2>
               <p className="text-xs text-[#718078]">
-                Active codes ready for redemption during checkout.
+                Vouchers assigned exclusively to your registered account email for checkout redemption.
               </p>
             </div>
           </div>
@@ -283,7 +285,71 @@ export const MyVouchersPage: FC = () => {
         </div>
 
         {/* ========================================================= */}
-        {/* SECTION 2: PENDING BANK PAYMENT PURCHASES */}
+        {/* SECTION 2: GIFTS PURCHASED FOR OTHERS (AUDIT TRACKING)    */}
+        {/* ========================================================= */}
+        {purchasedGifts.length > 0 && (
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-outfit text-xl font-bold text-[#26352D] flex items-center space-x-2">
+                  <Gift className="w-5 h-5 text-[#72C98A]" />
+                  <span>Gifts Purchased for Others ({purchasedGifts.length})</span>
+                </h2>
+                <p className="text-xs text-[#718078]">
+                  Track vouchers you purchased for friends & family. Codes are delivered exclusively to the recipient's account.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {purchasedGifts.map((g) => (
+                <div
+                  key={g._id}
+                  className="bg-white rounded-2xl border border-[#DCEBE0] p-5 space-y-3 shadow-sm"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#72C98A] bg-[#DDF3E2] px-2.5 py-0.5 rounded-full">
+                        {g.isIssued ? 'Active with Recipient' : 'Issued'}
+                      </span>
+                      <p className="font-outfit font-extrabold text-2xl text-[#26352D] mt-2">
+                        {formatLKR(g.originalValue)}
+                      </p>
+                    </div>
+                    <span className="text-[11px] text-[#718078]">
+                      {new Date(g.createdAt).toLocaleDateString('en-LK', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1 text-xs text-[#718078]">
+                    <p>
+                      <strong>Recipient:</strong> <span className="text-[#26352D] font-bold">{g.recipientName}</span> ({g.recipientEmail})
+                    </p>
+                    {g.personalMessage && (
+                      <p className="italic text-[11px] bg-[#F2FAF4] p-2 rounded-xl border border-[#DCEBE0]">
+                        "{g.personalMessage}"
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-[#DCEBE0] text-[11px] text-[#718078] flex items-center justify-between">
+                    <span>Exclusive Recipient Code</span>
+                    <span className="font-semibold text-[#72C98A] bg-[#F2FAF4] px-2 py-0.5 rounded border border-[#DCEBE0]">
+                      Protected (Recipient-Only)
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* SECTION 3: PENDING BANK PAYMENT PURCHASES                 */}
         {/* ========================================================= */}
         {pendingPurchases.length > 0 && (
           <div className="space-y-4 pt-4">
