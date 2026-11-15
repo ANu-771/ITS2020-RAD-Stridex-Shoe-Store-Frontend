@@ -4,13 +4,13 @@ import {
   X,
   RotateCcw,
   Sparkles,
-  Bot,
   User,
   ShoppingBag,
   Info,
 } from 'lucide-react';
 import type { ChatMessage } from '../../types/ai.types';
 import { AiProductRecommendationCard } from './AiProductRecommendationCard';
+import stridexChatbotAvatar from '../../assets/stridex_chatbot.webp';
 
 interface AiChatWindowProps {
   isOpen: boolean;
@@ -83,8 +83,8 @@ export const AiChatWindow: React.FC<AiChatWindowProps> = ({
       <div className="bg-gradient-to-r from-[#26352D] via-[#2F4238] to-[#26352D] text-white px-4 py-3.5 flex items-center justify-between border-b border-[#3E5548] shadow-sm select-none">
         <div className="flex items-center gap-2.5">
           {/* Mini mascot icon */}
-          <div className="relative w-9 h-9 rounded-full bg-[#395043] border border-[#72C98A]/50 flex items-center justify-center shadow-inner">
-            <span className="text-lg">👟</span>
+          <div className="relative w-9 h-9 rounded-full bg-[#395043] border border-[#72C98A]/50 flex items-center justify-center shadow-inner overflow-hidden p-0.5">
+            <img src={stridexChatbotAvatar} alt="STRIDEX AI Robot" className="w-full h-full object-contain" />
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#72C98A] border-2 border-[#26352D] rounded-full" />
           </div>
 
@@ -185,13 +185,17 @@ export const AiChatWindow: React.FC<AiChatWindowProps> = ({
               >
                 {/* Sender Avatar */}
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs shadow-xs ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs shadow-xs overflow-hidden ${
                     isUser
                       ? 'bg-[#72C98A] text-white'
-                      : 'bg-[#26352D] text-[#72C98A]'
+                      : 'bg-[#26352D] p-0.5'
                   }`}
                 >
-                  {isUser ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                  {isUser ? (
+                    <User className="w-3.5 h-3.5" />
+                  ) : (
+                    <img src={stridexChatbotAvatar} alt="AI" className="w-full h-full object-contain" />
+                  )}
                 </div>
 
                 {/* Message Bubble */}
@@ -239,8 +243,8 @@ export const AiChatWindow: React.FC<AiChatWindowProps> = ({
         {/* Typing / Generating Indicator */}
         {isLoading && (
           <div className="flex items-center gap-2 text-[#718078] pl-1">
-            <div className="w-6 h-6 rounded-full bg-[#26352D] text-[#72C98A] flex items-center justify-center shrink-0">
-              <Bot className="w-3.5 h-3.5" />
+            <div className="w-6 h-6 rounded-full bg-[#26352D] p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
+              <img src={stridexChatbotAvatar} alt="AI" className="w-full h-full object-contain" />
             </div>
             <div className="bg-white border border-[#DCEBE0] px-3.5 py-2 rounded-2xl rounded-bl-xs shadow-xs flex items-center gap-1.5">
               <span className="text-[11px] text-[#718078] font-medium mr-1">
