@@ -5,6 +5,14 @@ import { User as UserIcon, Mail, Lock, Phone, Eye, EyeOff, UserPlus, AlertCircle
 import { authService } from '../../services/authService';
 import { useAppDispatch } from '../../hooks/reduxHooks';
 import { setCredentials } from '../../store/slices/authSlice';
+import { syncCartWithServer } from '../../store/slices/cartSlice';
+import { syncWishlistWithServer } from '../../store/slices/wishlistSlice';
+import {
+  loadGuestCart,
+  clearGuestCart,
+  loadGuestWishlist,
+  clearGuestWishlist,
+} from '../../utils/cartStorage';
 import { APP_NAME } from '../../utils/constants';
 
 export const RegisterPage: FC = () => {
@@ -41,6 +49,10 @@ export const RegisterPage: FC = () => {
 
     setIsLoading(true);
     try {
+      // 1. Capture genuine unauthenticated guest items before registration
+      const guestCart = loadGuestCart();
+      const guestWishlist = loadGuestWishlist();
+
       const response = await authService.register({
         fullName,
         email,
@@ -50,6 +62,16 @@ export const RegisterPage: FC = () => {
 
       const { user, accessToken } = response.data;
       dispatch(setCredentials({ user, token: accessToken }));
+
+      // 2. Safely sync guest items if any existed before registration
+      if (guestCart.length > 0) {
+        dispatch(syncCartWithServer(guestCart));
+        clearGuestCart();
+      }
+      if (guestWishlist.length > 0) {
+        dispatch(syncWishlistWithServer(guestWishlist.map((w) => w.productId)));
+        clearGuestWishlist();
+      }
 
       // Customer account redirects to homepage
       navigate('/', { replace: true });

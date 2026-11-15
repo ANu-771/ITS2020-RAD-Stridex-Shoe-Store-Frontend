@@ -2,6 +2,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { wishlistService } from '../../services/wishlistService';
 import type { Product } from '../../types';
+import { logout } from './authSlice';
+import {
+  loadWishlistStorage,
+  saveWishlistStorage,
+  loadGuestWishlist,
+  getCurrentUserId,
+} from '../../utils/cartStorage';
 
 export interface WishlistItem {
   productId: string;
@@ -19,26 +26,8 @@ interface WishlistState {
   error: string | null;
 }
 
-const loadWishlistFromStorage = (): WishlistItem[] => {
-  try {
-    const saved = localStorage.getItem('stridex_wishlist');
-    if (saved) return JSON.parse(saved);
-  } catch {
-    // Ignore JSON errors
-  }
-  return [];
-};
-
-const saveWishlistToStorage = (items: WishlistItem[]) => {
-  try {
-    localStorage.setItem('stridex_wishlist', JSON.stringify(items));
-  } catch {
-    // Ignore storage errors
-  }
-};
-
 const initialState: WishlistState = {
-  items: loadWishlistFromStorage(),
+  items: loadWishlistStorage(getCurrentUserId()),
   isLoading: false,
   error: null,
 };
@@ -47,6 +36,10 @@ const initialState: WishlistState = {
 export const fetchServerWishlist = createAsyncThunk(
   'wishlist/fetchServerWishlist',
   async (_, { rejectWithValue }) => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token) {
+      return rejectWithValue('User not authenticated');
+    }
     try {
       const res = await wishlistService.getWishlist();
       if (res.success) {
@@ -81,11 +74,16 @@ export const syncWishlistWithServer = createAsyncThunk(
 export const toggleWishlistAsync = createAsyncThunk(
   'wishlist/toggleWishlistAsync',
   async (item: WishlistItem) => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token) {
+      // Guest mode - toggle locally
+      return item;
+    }
     try {
       await wishlistService.toggle(item.productId);
       return item;
     } catch {
-      // Return item anyway for optimistic local toggle
+      // Fallback for offline or local toggle
       return item;
     }
   }
@@ -117,18 +115,33 @@ export const wishlistSlice = createSlice({
       } else {
         state.items.push(action.payload);
       }
-      saveWishlistToStorage(state.items);
+      saveWishlistStorage(state.items, getCurrentUserId());
     },
     removeFromWishlist: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item.productId !== action.payload);
-      saveWishlistToStorage(state.items);
+      saveWishlistStorage(state.items, getCurrentUserId());
     },
     clearWishlist: (state) => {
       state.items = [];
-      saveWishlistToStorage([]);
+      saveWishlistStorage([], getCurrentUserId());
+    },
+    resetWishlistState: (state) => {
+      state.items = loadGuestWishlist();
+      state.isLoading = false;
+      state.error = null;
+    },
+    loadWishlistForUser: (state, action: PayloadAction<string | null>) => {
+      state.items = loadWishlistStorage(action.payload);
     },
   },
   extraReducers: (builder) => {
+    // Automatically reset wishlist state when user logs out
+    builder.addCase(logout, (state) => {
+      state.items = loadGuestWishlist();
+      state.isLoading = false;
+      state.error = null;
+    });
+
     // fetchServerWishlist
     builder.addCase(fetchServerWishlist.pending, (state) => {
       state.isLoading = true;
@@ -146,7 +159,7 @@ export const wishlistSlice = createSlice({
         basePrice: p.basePrice,
         discountPrice: p.discountPrice || 0,
       }));
-      saveWishlistToStorage(state.items);
+      saveWishlistStorage(state.items, getCurrentUserId());
     });
     builder.addCase(fetchServerWishlist.rejected, (state, action) => {
       state.isLoading = false;
@@ -165,7 +178,7 @@ export const wishlistSlice = createSlice({
         basePrice: p.basePrice,
         discountPrice: p.discountPrice || 0,
       }));
-      saveWishlistToStorage(state.items);
+      saveWishlistStorage(state.items, getCurrentUserId());
     });
 
     // toggleWishlistAsync
@@ -177,18 +190,23 @@ export const wishlistSlice = createSlice({
       } else {
         state.items.push(item);
       }
-      saveWishlistToStorage(state.items);
+      saveWishlistStorage(state.items, getCurrentUserId());
     });
 
     // moveToCartAsync
     builder.addCase(moveToCartAsync.fulfilled, (state, action) => {
       state.items = state.items.filter((i) => i.productId !== action.payload);
-      saveWishlistToStorage(state.items);
+      saveWishlistStorage(state.items, getCurrentUserId());
     });
   },
 });
 
-export const { toggleWishlist, removeFromWishlist, clearWishlist } =
-  wishlistSlice.actions;
+export const {
+  toggleWishlist,
+  removeFromWishlist,
+  clearWishlist,
+  resetWishlistState,
+  loadWishlistForUser,
+} = wishlistSlice.actions;
 
 export default wishlistSlice.reducer;

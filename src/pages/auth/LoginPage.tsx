@@ -3,18 +3,22 @@ import type { FC, FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 import { authService } from '../../services/authService';
-import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { useAppDispatch } from '../../hooks/reduxHooks';
 import { setCredentials } from '../../store/slices/authSlice';
-import { syncCartWithServer } from '../../store/slices/cartSlice';
-import { syncWishlistWithServer } from '../../store/slices/wishlistSlice';
+import { syncCartWithServer, fetchServerCart } from '../../store/slices/cartSlice';
+import { syncWishlistWithServer, fetchServerWishlist } from '../../store/slices/wishlistSlice';
+import {
+  loadGuestCart,
+  clearGuestCart,
+  loadGuestWishlist,
+  clearGuestWishlist,
+} from '../../utils/cartStorage';
 import { APP_NAME } from '../../utils/constants';
 
 export const LoginPage: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const { items: cartItems } = useAppSelector((state) => state.cart);
-  const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,15 +40,32 @@ export const LoginPage: FC = () => {
 
     setIsLoading(true);
     try {
+      // 1. Capture genuine unauthenticated guest items before auth changes
+      const guestCart = loadGuestCart();
+      const guestWishlist = loadGuestWishlist();
+
+      // 2. Perform authentication
       const response = await authService.login({ email, password });
       const { user, accessToken } = response.data;
 
-      // Update Redux state
+      // 3. Update Redux auth credentials
       dispatch(setCredentials({ user, token: accessToken }));
 
-      // Synchronize local guest cart and wishlist with MongoDB
-      dispatch(syncCartWithServer(cartItems));
-      dispatch(syncWishlistWithServer(wishlistItems.map((w) => w.productId)));
+      // 4. Safely handle cart: merge genuine guest items or fetch user's own cart
+      if (guestCart.length > 0) {
+        dispatch(syncCartWithServer(guestCart));
+        clearGuestCart();
+      } else {
+        dispatch(fetchServerCart());
+      }
+
+      // 5. Safely handle wishlist: merge genuine guest items or fetch user's own wishlist
+      if (guestWishlist.length > 0) {
+        dispatch(syncWishlistWithServer(guestWishlist.map((w) => w.productId)));
+        clearGuestWishlist();
+      } else {
+        dispatch(fetchServerWishlist());
+      }
 
       // Redirect by role
       if (from) {

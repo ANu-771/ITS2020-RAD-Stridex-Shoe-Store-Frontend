@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
+import { resetCartState } from '../../store/slices/cartSlice';
+import { resetWishlistState } from '../../store/slices/wishlistSlice';
 import { authService } from '../../services/authService';
 import { InventoryDashboardOverview } from '../inventory/InventoryDashboardOverview';
 import { InventoryVariantsTable } from '../inventory/InventoryVariantsTable';
@@ -50,6 +52,8 @@ export const InventoryDashboardPage: FC = () => {
       // Ignore network errors on logout
     } finally {
       dispatch(logout());
+      dispatch(resetCartState());
+      dispatch(resetWishlistState());
       navigate('/login');
     }
   };

@@ -18,7 +18,8 @@ import {
 import { APP_NAME, APP_TAGLINE } from '../../utils/constants';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
-import { toggleCartOpen } from '../../store/slices/cartSlice';
+import { toggleCartOpen, resetCartState } from '../../store/slices/cartSlice';
+import { resetWishlistState } from '../../store/slices/wishlistSlice';
 import { authService } from '../../services/authService';
 
 export const Navbar: FC = () => {
@@ -45,6 +46,8 @@ export const Navbar: FC = () => {
       // Proceed even if network call fails
     } finally {
       dispatch(logout());
+      dispatch(resetCartState());
+      dispatch(resetWishlistState());
       setUserDropdownOpen(false);
       setMobileMenuOpen(false);
       navigate('/');

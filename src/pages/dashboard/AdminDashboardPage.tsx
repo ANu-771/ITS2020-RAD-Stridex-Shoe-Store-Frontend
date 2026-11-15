@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
+import { resetCartState } from '../../store/slices/cartSlice';
+import { resetWishlistState } from '../../store/slices/wishlistSlice';
 import { authService } from '../../services/authService';
 import { AdminOverviewPage } from '../admin/AdminOverviewPage';
 import { AdminProductsPage } from '../admin/AdminProductsPage';
@@ -85,6 +87,8 @@ export const AdminDashboardPage: FC = () => {
       // Ignore network errors on logout
     } finally {
       dispatch(logout());
+      dispatch(resetCartState());
+      dispatch(resetWishlistState());
       navigate('/login');
     }
   };

@@ -2,6 +2,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { cartService } from '../../services/cartService';
 import type { CartServerItem, AddToCartPayload } from '../../services/cartService';
+import { logout } from './authSlice';
+import {
+  loadCartStorage,
+  saveCartStorage,
+  loadGuestCart,
+  getCurrentUserId,
+} from '../../utils/cartStorage';
 
 export interface CartItem {
   id: string; // Composite key: `${productId}-${size}-${color}`
@@ -27,26 +34,8 @@ interface CartState {
   error: string | null;
 }
 
-const loadCartFromStorage = (): CartItem[] => {
-  try {
-    const saved = localStorage.getItem('stridex_cart');
-    if (saved) return JSON.parse(saved);
-  } catch {
-    // Ignore JSON errors
-  }
-  return [];
-};
-
-const saveCartToStorage = (items: CartItem[]) => {
-  try {
-    localStorage.setItem('stridex_cart', JSON.stringify(items));
-  } catch {
-    // Ignore storage errors
-  }
-};
-
 const initialState: CartState = {
-  items: loadCartFromStorage(),
+  items: loadCartStorage(getCurrentUserId()),
   isOpen: false,
   isLoading: false,
   error: null,
@@ -56,6 +45,10 @@ const initialState: CartState = {
 export const fetchServerCart = createAsyncThunk(
   'cart/fetchServerCart',
   async (_, { rejectWithValue }) => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token) {
+      return rejectWithValue('User not authenticated');
+    }
     try {
       const res = await cartService.getCart();
       if (res.success) {
@@ -68,7 +61,7 @@ export const fetchServerCart = createAsyncThunk(
   }
 );
 
-// Async Thunk: Sync local cart to server upon login
+// Async Thunk: Sync local guest cart to server upon login
 export const syncCartWithServer = createAsyncThunk(
   'cart/syncCartWithServer',
   async (items: CartItem[], { rejectWithValue }) => {
@@ -97,10 +90,15 @@ export const syncCartWithServer = createAsyncThunk(
   }
 );
 
-// Async Thunk: Add to Cart (syncs with server)
+// Async Thunk: Add to Cart (syncs with server when authenticated, falls back gracefully for guests)
 export const addToCartAsync = createAsyncThunk(
   'cart/addToCartAsync',
-  async (item: CartItem, { rejectWithValue }) => {
+  async (item: CartItem) => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token) {
+      // Guest mode - purely client-side isolated storage
+      return { fallbackItem: item };
+    }
     try {
       const payload: AddToCartPayload = {
         productId: item.productId,
@@ -114,9 +112,9 @@ export const addToCartAsync = createAsyncThunk(
         return { serverItems: res.data.items, fallbackItem: item };
       }
       return { fallbackItem: item };
-    } catch (err: any) {
-      // Return fallback so local cart still works even if offline
-      return rejectWithValue(err.response?.data?.message || 'Failed to add item to server cart');
+    } catch {
+      // Return fallback item so UI remains responsive even if server rejects or fails
+      return { fallbackItem: item };
     }
   }
 );
@@ -125,19 +123,20 @@ export const addToCartAsync = createAsyncThunk(
 export const updateQuantityAsync = createAsyncThunk(
   'cart/updateQuantityAsync',
   async (
-    { id, itemId, quantity }: { id: string; itemId?: string; quantity: number },
-    { rejectWithValue }
+    { id, itemId, quantity }: { id: string; itemId?: string; quantity: number }
   ) => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token || !itemId) {
+      return { id, quantity };
+    }
     try {
-      if (itemId) {
-        const res = await cartService.updateQuantity(itemId, quantity);
-        if (res.success) {
-          return { serverItems: res.data.items, id, quantity };
-        }
+      const res = await cartService.updateQuantity(itemId, quantity);
+      if (res.success) {
+        return { serverItems: res.data.items, id, quantity };
       }
       return { id, quantity };
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to update quantity');
+    } catch {
+      return { id, quantity };
     }
   }
 );
@@ -145,17 +144,19 @@ export const updateQuantityAsync = createAsyncThunk(
 // Async Thunk: Remove Item
 export const removeFromCartAsync = createAsyncThunk(
   'cart/removeFromCartAsync',
-  async ({ id, itemId }: { id: string; itemId?: string }, { rejectWithValue }) => {
+  async ({ id, itemId }: { id: string; itemId?: string }) => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token || !itemId) {
+      return { id };
+    }
     try {
-      if (itemId) {
-        const res = await cartService.removeItem(itemId);
-        if (res.success) {
-          return { serverItems: res.data.items, id };
-        }
+      const res = await cartService.removeItem(itemId);
+      if (res.success) {
+        return { serverItems: res.data.items, id };
       }
       return { id };
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to remove item');
+    } catch {
+      return { id };
     }
   }
 );
@@ -164,6 +165,10 @@ export const removeFromCartAsync = createAsyncThunk(
 export const clearCartAsync = createAsyncThunk(
   'cart/clearCartAsync',
   async () => {
+    const token = localStorage.getItem('stridex_access_token');
+    if (!token) {
+      return [];
+    }
     try {
       await cartService.clearCart();
       return [];
@@ -185,12 +190,12 @@ export const cartSlice = createSlice({
       } else {
         state.items.push(action.payload);
       }
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
       state.isOpen = true;
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
     },
     updateQuantity: (
       state,
@@ -203,12 +208,21 @@ export const cartSlice = createSlice({
         } else {
           item.quantity = Math.min(action.payload.quantity, item.maxStock || 99);
         }
-        saveCartToStorage(state.items);
+        saveCartStorage(state.items, getCurrentUserId());
       }
     },
     clearCart: (state) => {
       state.items = [];
-      saveCartToStorage([]);
+      saveCartStorage([], getCurrentUserId());
+    },
+    resetCartState: (state) => {
+      state.items = loadGuestCart();
+      state.isOpen = false;
+      state.isLoading = false;
+      state.error = null;
+    },
+    loadCartForUser: (state, action: PayloadAction<string | null>) => {
+      state.items = loadCartStorage(action.payload);
     },
     toggleCartOpen: (state) => {
       state.isOpen = !state.isOpen;
@@ -218,6 +232,14 @@ export const cartSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Automatically reset cart state when user logs out
+    builder.addCase(logout, (state) => {
+      state.items = loadGuestCart();
+      state.isOpen = false;
+      state.isLoading = false;
+      state.error = null;
+    });
+
     // fetchServerCart
     builder.addCase(fetchServerCart.pending, (state) => {
       state.isLoading = true;
@@ -241,7 +263,7 @@ export const cartSlice = createSlice({
         quantity: i.quantity,
         maxStock: i.maxStock,
       }));
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
     });
     builder.addCase(fetchServerCart.rejected, (state, action) => {
       state.isLoading = false;
@@ -266,7 +288,7 @@ export const cartSlice = createSlice({
         quantity: i.quantity,
         maxStock: i.maxStock,
       }));
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
     });
 
     // addToCartAsync
@@ -297,7 +319,7 @@ export const cartSlice = createSlice({
           state.items.push(payload.fallbackItem);
         }
       }
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
       state.isOpen = true;
     });
 
@@ -331,7 +353,7 @@ export const cartSlice = createSlice({
           }
         }
       }
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
     });
 
     // removeFromCartAsync
@@ -357,13 +379,13 @@ export const cartSlice = createSlice({
       } else {
         state.items = state.items.filter((item) => item.id !== payload.id);
       }
-      saveCartToStorage(state.items);
+      saveCartStorage(state.items, getCurrentUserId());
     });
 
     // clearCartAsync
     builder.addCase(clearCartAsync.fulfilled, (state) => {
       state.items = [];
-      saveCartToStorage([]);
+      saveCartStorage([], getCurrentUserId());
     });
   },
 });
@@ -373,6 +395,8 @@ export const {
   removeFromCart,
   updateQuantity,
   clearCart,
+  resetCartState,
+  loadCartForUser,
   toggleCartOpen,
   setCartOpen,
 } = cartSlice.actions;
