@@ -19,7 +19,7 @@ import { orderService } from '../../services/orderService';
 import type { Order } from '../../services/orderService';
 import { formatLKR } from '../../utils/currency';
 import { useToast } from '../../context/ToastContext';
-import { SimulatedPaymentModal } from '../../components/orders/SimulatedPaymentModal';
+import Swal from 'sweetalert2';
 
 export const CheckoutPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -42,7 +42,32 @@ export const CheckoutPage: FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
+
+  const handleCardPaymentClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    Swal.fire({
+      title: 'Online Payment Coming Soon!',
+      html: `
+        <div style="font-size: 14px; color: #718078; line-height: 1.6; text-align: center;">
+          <p>Visa, MasterCard and AMEX online payments are currently unavailable. We are working to bring secure online payments to STRIDEX soon.</p>
+          <p style="margin-top: 14px; font-weight: 700; color: #26352D;">Please select Cash on Delivery to complete your order.</p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'OK, Got It',
+      confirmButtonColor: '#72C98A',
+      background: '#FFFFFF',
+      color: '#26352D',
+      customClass: {
+        popup: 'rounded-3xl border border-[#DCEBE0] shadow-xl p-6',
+        confirmButton: 'px-7 py-2.5 rounded-xl font-bold text-xs shadow-sm cursor-pointer',
+        title: 'font-outfit font-bold text-xl text-[#26352D]',
+      },
+    });
+  };
 
   // Financial calculations
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -87,6 +112,11 @@ export const CheckoutPage: FC = () => {
       return;
     }
 
+    if ((formData.paymentMethod as string) === 'ONLINE_CARD') {
+      handleCardPaymentClick();
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -113,11 +143,7 @@ export const CheckoutPage: FC = () => {
       if (res.success && res.data) {
         setConfirmedOrder(res.data);
         dispatch(clearCart());
-        if (res.data.paymentMethod === 'ONLINE_CARD') {
-          setIsPaymentModalOpen(true);
-        } else {
-          showToast('Order confirmed successfully!', 'success');
-        }
+        showToast('Order confirmed successfully!', 'success');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err: any) {
@@ -204,18 +230,29 @@ export const CheckoutPage: FC = () => {
                 <strong>Cash on Delivery (Island-wide):</strong> Please have <strong>{formatLKR(confirmedOrder.finalTotal)}</strong> in Sri Lankan Rupees ready for the courier.
               </span>
             </div>
-          ) : confirmedOrder.paymentMethod === 'ONLINE_CARD' && confirmedOrder.paymentStatus !== 'PAID' ? (
-            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 max-w-lg mx-auto text-xs text-amber-800 flex items-center justify-between gap-3">
-              <div className="flex items-center space-x-2">
-                <CreditCard className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>Online payment is pending. Use the demo gateway to complete it.</span>
+          ) : confirmedOrder.paymentMethod === 'BANK_TRANSFER' ? (
+            <div className="p-4 bg-[#F2FAF4] rounded-2xl border border-[#DCEBE0] max-w-lg mx-auto text-xs text-[#26352D] space-y-2 text-left">
+              <div className="flex items-center space-x-2 font-bold text-[#35A866]">
+                <Building2 className="w-4 h-4" />
+                <span>Direct Bank Transfer Instructions (Commercial Bank / HNB)</span>
               </div>
-              <button
-                onClick={() => setIsPaymentModalOpen(true)}
-                className="px-3 py-1.5 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold rounded-lg shrink-0 cursor-pointer"
-              >
-                Pay Now
-              </button>
+              <p className="text-[#718078]">
+                Please transfer <strong>{formatLKR(confirmedOrder.finalTotal)}</strong> using your Order Number <strong>{confirmedOrder.orderNumber}</strong> as the payment reference.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+                <div className="p-2.5 bg-white rounded-xl border border-[#DCEBE0]">
+                  <strong className="text-[#26352D] block">Commercial Bank of Ceylon</strong>
+                  <span className="text-[#718078]">Acc: 1000-8492-3810</span><br />
+                  <span className="text-[#718078]">Name: STRIDEX Footwear Ltd</span><br />
+                  <span className="text-[#718078]">Branch: Colombo 03</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-[#DCEBE0]">
+                  <strong className="text-[#26352D] block">Hatton National Bank (HNB)</strong>
+                  <span className="text-[#718078]">Acc: 0390-1029-4821</span><br />
+                  <span className="text-[#718078]">Name: STRIDEX Footwear Ltd</span><br />
+                  <span className="text-[#718078]">Branch: Kollupitiya</span>
+                </div>
+              </div>
             </div>
           ) : null}
 
@@ -242,22 +279,12 @@ export const CheckoutPage: FC = () => {
 
           {/* Action CTAs */}
           <div className="pt-6 border-t border-[#DCEBE0] flex flex-col sm:flex-row items-center justify-center gap-4">
-            {confirmedOrder.paymentMethod === 'ONLINE_CARD' && confirmedOrder.paymentStatus !== 'PAID' && (
-              <button
-                onClick={() => setIsPaymentModalOpen(true)}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer"
-              >
-                <CreditCard className="w-4 h-4" />
-                <span>Open Payment Simulator</span>
-              </button>
-            )}
-
             <Link
               to="/orders"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-[#DDF3E2] text-[#26352D] border border-[#DCEBE0] font-bold text-xs shadow-xs transition-all flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-2"
             >
+              <ShoppingBag className="w-4 h-4" />
               <span>View My Order History</span>
-              <ArrowRight className="w-4 h-4" />
             </Link>
 
             <Link
@@ -268,17 +295,6 @@ export const CheckoutPage: FC = () => {
             </Link>
           </div>
         </div>
-
-        {/* Embedded Simulated Payment Dialog */}
-        <SimulatedPaymentModal
-          order={confirmedOrder}
-          isOpen={isPaymentModalOpen}
-          onClose={() => setIsPaymentModalOpen(false)}
-          onPaymentComplete={(updated) => {
-            setConfirmedOrder(updated);
-            setIsPaymentModalOpen(false);
-          }}
-        />
       </div>
     );
   }
@@ -499,6 +515,7 @@ export const CheckoutPage: FC = () => {
             </h3>
 
             <div className="space-y-3">
+              {/* Option 1: Cash on Delivery */}
               <label
                 onClick={() => setFormData({ ...formData, paymentMethod: 'CASH_ON_DELIVERY' })}
                 className={`flex items-start p-4 rounded-2xl border cursor-pointer transition-all ${
@@ -514,7 +531,7 @@ export const CheckoutPage: FC = () => {
                   onChange={() => setFormData({ ...formData, paymentMethod: 'CASH_ON_DELIVERY' })}
                   className="mt-1 text-[#72C98A] focus:ring-[#72C98A]"
                 />
-                <div className="ml-3">
+                <div className="ml-3 flex-1">
                   <div className="flex items-center space-x-2">
                     <Banknote className="w-4 h-4 text-[#72C98A]" />
                     <strong className="font-outfit font-bold text-sm text-[#26352D]">
@@ -530,34 +547,35 @@ export const CheckoutPage: FC = () => {
                 </div>
               </label>
 
-              <label
-                onClick={() => setFormData({ ...formData, paymentMethod: 'ONLINE_CARD' })}
-                className={`flex items-start p-4 rounded-2xl border cursor-pointer transition-all ${
-                  formData.paymentMethod === 'ONLINE_CARD'
-                    ? 'border-[#72C98A] bg-[#DDF3E2]/40 shadow-xs'
-                    : 'border-[#DCEBE0] hover:border-[#72C98A]/50 bg-white'
-                }`}
+              {/* Option 2: Visa / MasterCard / AMEX (Kept visible, triggers SweetAlert2 notification) */}
+              <div
+                onClick={handleCardPaymentClick}
+                className="flex items-start p-4 rounded-2xl border border-[#DCEBE0] hover:border-[#72C98A]/50 bg-white cursor-pointer transition-all group"
               >
                 <input
                   type="radio"
                   name="paymentMethod"
-                  checked={formData.paymentMethod === 'ONLINE_CARD'}
-                  onChange={() => setFormData({ ...formData, paymentMethod: 'ONLINE_CARD' })}
-                  className="mt-1 text-[#72C98A] focus:ring-[#72C98A]"
+                  checked={false}
+                  readOnly
+                  className="mt-1 text-[#72C98A] focus:ring-[#72C98A] pointer-events-none"
                 />
-                <div className="ml-3">
+                <div className="ml-3 flex-1">
                   <div className="flex items-center space-x-2">
                     <CreditCard className="w-4 h-4 text-[#72C98A]" />
                     <strong className="font-outfit font-bold text-sm text-[#26352D]">
                       Visa / MasterCard / AMEX
                     </strong>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                      Coming Soon
+                    </span>
                   </div>
                   <p className="text-xs text-[#718078] mt-0.5">
                     Pay with local or international debit/credit cards. 3D Secure verified.
                   </p>
                 </div>
-              </label>
+              </div>
 
+              {/* Option 3: Direct Bank Transfer (Commercial Bank / HNB) */}
               <label
                 onClick={() => setFormData({ ...formData, paymentMethod: 'BANK_TRANSFER' })}
                 className={`flex items-start p-4 rounded-2xl border cursor-pointer transition-all ${
@@ -573,7 +591,7 @@ export const CheckoutPage: FC = () => {
                   onChange={() => setFormData({ ...formData, paymentMethod: 'BANK_TRANSFER' })}
                   className="mt-1 text-[#72C98A] focus:ring-[#72C98A]"
                 />
-                <div className="ml-3">
+                <div className="ml-3 flex-1">
                   <div className="flex items-center space-x-2">
                     <Building2 className="w-4 h-4 text-[#72C98A]" />
                     <strong className="font-outfit font-bold text-sm text-[#26352D]">
@@ -583,6 +601,31 @@ export const CheckoutPage: FC = () => {
                   <p className="text-xs text-[#718078] mt-0.5">
                     Transfer directly to our Colombo branch account. Bank details provided on receipt.
                   </p>
+
+                  {formData.paymentMethod === 'BANK_TRANSFER' && (
+                    <div className="mt-3 p-3.5 bg-white rounded-xl border border-[#DCEBE0] text-xs space-y-2.5 animate-in fade-in duration-150">
+                      <div className="text-[11px] font-bold text-[#26352D] uppercase tracking-wider">
+                        Available Bank Accounts for Sri Lanka:
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                        <div className="p-2.5 bg-[#F2FAF4] rounded-lg border border-[#DCEBE0]">
+                          <strong className="text-[#26352D] block">Commercial Bank of Ceylon</strong>
+                          <span className="text-[#718078]">Account: 1000-8492-3810</span><br />
+                          <span className="text-[#718078]">Name: STRIDEX Footwear Ltd</span><br />
+                          <span className="text-[#718078]">Branch: Colombo 03</span>
+                        </div>
+                        <div className="p-2.5 bg-[#F2FAF4] rounded-lg border border-[#DCEBE0]">
+                          <strong className="text-[#26352D] block">Hatton National Bank (HNB)</strong>
+                          <span className="text-[#718078]">Account: 0390-1029-4821</span><br />
+                          <span className="text-[#718078]">Name: STRIDEX Footwear Ltd</span><br />
+                          <span className="text-[#718078]">Branch: Kollupitiya</span>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-[#718078]">
+                        Please use your Order Number as payment reference. Order will be confirmed upon bank transfer receipt.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </label>
             </div>

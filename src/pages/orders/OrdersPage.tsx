@@ -11,7 +11,6 @@ import {
   ShoppingBag, 
   MapPin, 
   Calendar,
-  CreditCard,
   XCircle,
   Search,
   ExternalLink,
@@ -23,7 +22,6 @@ import type { Order } from '../../services/orderService';
 import { formatLKR } from '../../utils/currency';
 import { useAppSelector } from '../../hooks/reduxHooks';
 import { OrderDetailsModal } from '../../components/orders/OrderDetailsModal';
-import { SimulatedPaymentModal } from '../../components/orders/SimulatedPaymentModal';
 
 type FilterTab = 'ALL' | 'ACTIVE' | 'DELIVERED' | 'CANCELLED';
 
@@ -38,8 +36,6 @@ export const OrdersPage: FC = () => {
   // Modals state
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
-  const [payingOrder, setPayingOrder] = useState<Order | null>(null);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
 
   const fetchOrders = async () => {
     setIsLoading(true);
@@ -278,11 +274,6 @@ export const OrdersPage: FC = () => {
         /* Orders List */
         <div className="space-y-6">
           {filteredOrders.map((order) => {
-            const isUnpaidOnline =
-              order.paymentMethod === 'ONLINE_CARD' &&
-              order.paymentStatus !== 'PAID' &&
-              order.orderStatus !== 'CANCELLED';
-
             return (
               <div
                 key={order.id}
@@ -365,19 +356,6 @@ export const OrdersPage: FC = () => {
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    {isUnpaidOnline && (
-                      <button
-                        onClick={() => {
-                          setPayingOrder(order);
-                          setIsPaymentModalOpen(true);
-                        }}
-                        className="px-3.5 py-1.5 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center space-x-1.5 cursor-pointer"
-                      >
-                        <CreditCard className="w-3.5 h-3.5" />
-                        <span>Pay Online (Demo)</span>
-                      </button>
-                    )}
-
                     <button
                       onClick={() => {
                         setSelectedOrder(order);
@@ -402,21 +380,6 @@ export const OrdersPage: FC = () => {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         onOrderUpdated={handleOrderUpdated}
-      />
-
-      {/* Quick Pay Modal from Orders List */}
-      <SimulatedPaymentModal
-        order={payingOrder}
-        isOpen={isPaymentModalOpen}
-        onClose={() => {
-          setIsPaymentModalOpen(false);
-          setPayingOrder(null);
-        }}
-        onPaymentComplete={(updated) => {
-          handleOrderUpdated(updated);
-          setIsPaymentModalOpen(false);
-          setPayingOrder(null);
-        }}
       />
     </div>
   );

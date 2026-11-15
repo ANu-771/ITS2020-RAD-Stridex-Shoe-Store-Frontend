@@ -17,7 +17,6 @@ import type { Order } from '../../services/orderService';
 import { orderService } from '../../services/orderService';
 import { formatLKR } from '../../utils/currency';
 import { useToast } from '../../context/ToastContext';
-import { SimulatedPaymentModal } from './SimulatedPaymentModal';
 
 interface OrderDetailsModalProps {
   order: Order | null;
@@ -44,7 +43,6 @@ export const OrderDetailsModal: FC<OrderDetailsModalProps> = ({
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelReason, setCancelReason] = useState('Change of delivery plans');
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   if (!isOpen || !order) return null;
 
@@ -52,10 +50,6 @@ export const OrderDetailsModal: FC<OrderDetailsModalProps> = ({
   const isDelivered = order.orderStatus === 'DELIVERED';
   const isShipped = order.orderStatus === 'SHIPPED';
   const canCancel = !isCancelled && !isDelivered && !isShipped;
-  const canPayOnline =
-    order.paymentMethod === 'ONLINE_CARD' &&
-    order.paymentStatus !== 'PAID' &&
-    !isCancelled;
 
   // Compute current step index for the tracker
   const currentStepIndex = ORDER_STEPS.findIndex((s) => s.key === order.orderStatus);
@@ -240,26 +234,6 @@ export const OrderDetailsModal: FC<OrderDetailsModalProps> = ({
               </div>
             )}
 
-            {/* Online Payment Call-to-Action (If unpaid) */}
-            {canPayOnline && (
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
-                <div className="flex items-center space-x-2 text-amber-800">
-                  <CreditCard className="w-5 h-5 text-amber-600 shrink-0" />
-                  <div>
-                    <strong className="block font-bold">Online Payment Pending</strong>
-                    <span>Complete your simulated card transaction to finalize order dispatch.</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setIsPaymentModalOpen(true)}
-                  className="px-4 py-2 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
-                >
-                  Pay Now (Demo Gateway)
-                </button>
-              </div>
-            )}
-
             {/* Order Items Snapshots */}
             <div className="space-y-3">
               <h3 className="font-outfit font-bold text-base text-[#26352D]">
@@ -422,14 +396,6 @@ export const OrderDetailsModal: FC<OrderDetailsModalProps> = ({
             )}
 
             <div className="flex items-center space-x-2">
-              {canPayOnline && (
-                <button
-                  onClick={() => setIsPaymentModalOpen(true)}
-                  className="px-4 py-2 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
-                >
-                  Open Payment Simulator
-                </button>
-              )}
               <button
                 onClick={onClose}
                 className="px-5 py-2 bg-white hover:bg-[#F2FAF4] text-[#26352D] font-bold text-xs rounded-xl border border-[#DCEBE0] transition-colors cursor-pointer"
@@ -440,17 +406,6 @@ export const OrderDetailsModal: FC<OrderDetailsModalProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Embedded Simulated Payment Gateway Dialog */}
-      <SimulatedPaymentModal
-        order={order}
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        onPaymentComplete={(updatedOrder) => {
-          onOrderUpdated(updatedOrder);
-          setIsPaymentModalOpen(false);
-        }}
-      />
     </>
   );
 };

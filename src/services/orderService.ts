@@ -95,13 +95,6 @@ export interface CreateOrderPayload {
   paymentMethod?: 'CASH_ON_DELIVERY' | 'ONLINE_CARD' | 'BANK_TRANSFER';
 }
 
-export interface SimulatePaymentPayload {
-  simulationResult: 'SUCCESS' | 'FAILED' | 'PENDING';
-  cardBrand?: string;
-  last4?: string;
-  notes?: string;
-}
-
 export interface UpdateOrderStatusPayload {
   orderStatus: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   note?: string;
@@ -134,14 +127,6 @@ export const orderService = {
 
   getOrderById: async (id: string): Promise<{ success: boolean; data: Order }> => {
     const res = await api.get(`/orders/${id}`);
-    return res.data;
-  },
-
-  simulatePayment: async (
-    orderId: string,
-    payload: SimulatePaymentPayload
-  ): Promise<{ success: boolean; message: string; data: Order }> => {
-    const res = await api.post(`/orders/${orderId}/pay`, payload);
     return res.data;
   },
 
