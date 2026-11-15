@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
 import { CartDrawer } from '../components/cart/CartDrawer';
+import { AiChatbot } from '../components/ai/AiChatbot';
 import { ToastProvider } from '../context/ToastContext';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { fetchServerCart } from '../store/slices/cartSlice';
@@ -29,6 +30,7 @@ export const RootLayout: FC = () => {
         </main>
         <Footer />
         <CartDrawer />
+        <AiChatbot />
       </div>
     </ToastProvider>
   );
