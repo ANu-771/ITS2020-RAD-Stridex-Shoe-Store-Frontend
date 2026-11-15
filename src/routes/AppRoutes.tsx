@@ -50,10 +50,26 @@ export const AppRoutes: FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Role-Protected Inventory Management Dashboard */}
         <Route
           path="inventory"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.INVENTORY_MANAGER, UserRole.ADMIN]}>
+              <InventoryDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="inventory/dashboard"
           element={
             <ProtectedRoute allowedRoles={[UserRole.INVENTORY_MANAGER, UserRole.ADMIN]}>
               <InventoryDashboardPage />
