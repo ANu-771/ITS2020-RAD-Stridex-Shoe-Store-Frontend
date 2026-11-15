@@ -11,12 +11,17 @@ import {
   ArrowLeft, 
   ArrowRight,
   ShoppingBag,
-  Clock
+  Clock,
+  Gift,
+  Tag,
+  X
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
 import { clearCart } from '../../store/slices/cartSlice';
 import { orderService } from '../../services/orderService';
 import type { Order } from '../../services/orderService';
+import { giftVoucherService } from '../../services/giftVoucherService';
+import type { VoucherValidateResult } from '../../services/giftVoucherService';
 import { formatLKR } from '../../utils/currency';
 import { useToast } from '../../context/ToastContext';
 import Swal from 'sweetalert2';
@@ -69,12 +74,48 @@ export const CheckoutPage: FC = () => {
     });
   };
 
+  // Voucher State
+  const [voucherInput, setVoucherInput] = useState<string>('');
+  const [isValidatingVoucher, setIsValidatingVoucher] = useState<boolean>(false);
+  const [appliedVoucher, setAppliedVoucher] = useState<VoucherValidateResult | null>(null);
+
   // Financial calculations
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const FREE_SHIPPING_THRESHOLD = 15000; // in LKR
   const STANDARD_DELIVERY_FEE = 650; // in LKR
   const deliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : STANDARD_DELIVERY_FEE;
-  const finalTotal = subtotal + deliveryFee;
+  const grossTotal = subtotal + deliveryFee;
+  const voucherDiscount = appliedVoucher ? Math.min(appliedVoucher.remainingBalance, grossTotal) : 0;
+  const finalTotal = Math.max(0, grossTotal - voucherDiscount);
+
+  const handleApplyVoucher = async () => {
+    if (!voucherInput.trim()) {
+      showToast('Please enter a voucher code', 'error');
+      return;
+    }
+    setIsValidatingVoucher(true);
+    try {
+      const res = await giftVoucherService.validateVoucher(voucherInput.trim(), grossTotal);
+      if (res.success && res.data) {
+        setAppliedVoucher(res.data);
+        showToast(
+          `Voucher ${res.data.code} applied! Discount: ${formatLKR(res.data.applicableDiscount)}`,
+          'success'
+        );
+      }
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Failed to apply voucher';
+      showToast(msg, 'error');
+    } finally {
+      setIsValidatingVoucher(false);
+    }
+  };
+
+  const handleRemoveVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherInput('');
+    showToast('Gift voucher removed from order', 'info');
+  };
 
   const validate = () => {
     const errors: Record<string, string> = {};
@@ -137,6 +178,7 @@ export const CheckoutPage: FC = () => {
           quantity: i.quantity,
         })),
         paymentMethod: formData.paymentMethod,
+        voucherCode: appliedVoucher ? appliedVoucher.code : undefined,
       };
 
       const res = await orderService.createOrder(payload);
@@ -214,6 +256,14 @@ export const CheckoutPage: FC = () => {
                 {confirmedOrder.paymentStatus}
               </strong>
             </div>
+            {confirmedOrder.voucherDiscount && confirmedOrder.voucherDiscount > 0 ? (
+              <div className="flex space-x-4">
+                <span className="text-[#35A866] font-semibold">Voucher Discount:</span>
+                <strong className="font-outfit text-sm font-bold text-[#35A866]">
+                  -{formatLKR(confirmedOrder.voucherDiscount)} ({confirmedOrder.voucherCode})
+                </strong>
+              </div>
+            ) : null}
             <div className="flex space-x-4">
               <span className="text-[#718078]">Final Total:</span>
               <strong className="font-outfit text-sm text-[#26352D] font-extrabold">
@@ -668,6 +718,82 @@ export const CheckoutPage: FC = () => {
               ))}
             </div>
 
+            {/* ======================================================== */}
+            {/* DIGITAL GIFT VOUCHER REDEMPTION SECTION                  */}
+            {/* ======================================================== */}
+            <div className="pt-3 border-t border-[#DCEBE0] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-outfit font-bold text-xs text-[#26352D] flex items-center space-x-1.5">
+                  <Gift className="w-4 h-4 text-[#72C98A]" />
+                  <span>Have a Gift Voucher?</span>
+                </span>
+                <Link
+                  to="/my-vouchers"
+                  target="_blank"
+                  className="text-[10px] text-[#72C98A] hover:underline font-semibold"
+                >
+                  View My Vouchers
+                </Link>
+              </div>
+
+              {!appliedVoucher ? (
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={voucherInput}
+                    onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
+                    placeholder="STRIDEX-XXXX-XXXX-XXXX"
+                    className="flex-1 px-3 py-2 text-xs uppercase font-mono rounded-xl bg-[#F2FAF4] border border-[#DCEBE0] focus:border-[#72C98A] focus:outline-none text-[#26352D]"
+                  />
+                  <button
+                    type="button"
+                    disabled={isValidatingVoucher || !voucherInput.trim()}
+                    onClick={handleApplyVoucher}
+                    className="px-4 py-2 rounded-xl bg-[#72C98A] hover:bg-[#59B976] disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                  >
+                    {isValidatingVoucher ? 'Checking...' : 'Apply'}
+                  </button>
+                </div>
+              ) : (
+                <div className="p-3 bg-[#DDF3E2]/50 border border-[#BDECCB] rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Tag className="w-3.5 h-3.5 text-[#35A866]" />
+                      <span className="font-mono font-bold text-xs text-[#26352D]">
+                        {appliedVoucher.code}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveVoucher}
+                      className="text-[#718078] hover:text-[#E45D5D] text-[11px] font-semibold flex items-center space-x-0.5 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 text-[11px] text-[#718078] pt-1 border-t border-[#BDECCB]/60">
+                    <span>Voucher Balance:</span>
+                    <span className="text-right font-medium text-[#26352D]">
+                      {formatLKR(appliedVoucher.remainingBalance)}
+                    </span>
+                    <span>Applied Discount:</span>
+                    <span className="text-right font-bold text-[#35A866]">
+                      -{formatLKR(voucherDiscount)}
+                    </span>
+                    {appliedVoucher.remainingBalance > voucherDiscount && (
+                      <>
+                        <span>Remaining Balance:</span>
+                        <span className="text-right font-medium text-[#26352D]">
+                          {formatLKR(appliedVoucher.remainingBalance - voucherDiscount)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Calculations in Sri Lankan Rupees */}
             <div className="space-y-2.5 pt-3 border-t border-[#DCEBE0] text-xs text-[#718078]">
               <div className="flex justify-between">
@@ -683,6 +809,15 @@ export const CheckoutPage: FC = () => {
                   {deliveryFee === 0 ? 'FREE' : formatLKR(deliveryFee)}
                 </span>
               </div>
+
+              {voucherDiscount > 0 && (
+                <div className="flex justify-between text-[#35A866] font-semibold">
+                  <span>Digital Gift Voucher</span>
+                  <span className="font-outfit font-bold text-sm">
+                    -{formatLKR(voucherDiscount)}
+                  </span>
+                </div>
+              )}
 
               <div className="pt-3 border-t border-[#DCEBE0] flex justify-between items-baseline">
                 <div>

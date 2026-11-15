@@ -87,6 +87,8 @@ export const Footer: FC = () => {
             <li><Link to="/shop?gender=MEN" className="text-[#718078] hover:text-[#72C98A] transition-colors">Men's Sneakers</Link></li>
             <li><Link to="/shop?gender=WOMEN" className="text-[#718078] hover:text-[#72C98A] transition-colors">Women's Collection</Link></li>
             <li><Link to="/brands" className="text-[#718078] hover:text-[#72C98A] transition-colors">Partner Brands</Link></li>
+            <li><Link to="/gift-vouchers" className="text-[#718078] hover:text-[#72C98A] transition-colors">Digital Gift Vouchers</Link></li>
+            <li><Link to="/my-vouchers" className="text-[#718078] hover:text-[#72C98A] transition-colors">My Gift Vouchers</Link></li>
             <li><Link to="/shop?filter=featured" className="text-[#718078] hover:text-[#72C98A] transition-colors">Featured Drops</Link></li>
           </ul>
         </div>

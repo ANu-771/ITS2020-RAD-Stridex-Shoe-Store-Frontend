@@ -47,6 +47,8 @@ export interface Order {
   deliveryFee: number;
   totalAmount?: number;
   finalTotal: number;
+  voucherDiscount?: number;
+  voucherCode?: string;
   paymentMethod: 'CASH_ON_DELIVERY' | 'ONLINE_CARD' | 'BANK_TRANSFER';
   paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
   orderStatus: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
@@ -92,6 +94,7 @@ export interface CreateOrderPayload {
     color: string;
     quantity: number;
   }>;
+  voucherCode?: string;
   paymentMethod?: 'CASH_ON_DELIVERY' | 'ONLINE_CARD' | 'BANK_TRANSFER';
 }
 

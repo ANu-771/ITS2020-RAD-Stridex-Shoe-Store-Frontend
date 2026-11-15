@@ -317,6 +317,12 @@ export const OrderDetailsModal: FC<OrderDetailsModalProps> = ({
                     <span>Express Island-wide Shipping:</span>
                     <span>{order.deliveryFee === 0 ? 'FREE' : formatLKR(order.deliveryFee)}</span>
                   </div>
+                  {order.voucherDiscount && order.voucherDiscount > 0 ? (
+                    <div className="flex justify-between text-[#35A866] font-semibold">
+                      <span>Voucher Discount ({order.voucherCode || 'Digital Voucher'}):</span>
+                      <span>-{formatLKR(order.voucherDiscount)}</span>
+                    </div>
+                  ) : null}
                   <div className="flex justify-between pt-1 border-t border-[#DCEBE0] text-sm">
                     <span className="font-bold text-[#26352D]">Final Total (LKR):</span>
                     <strong className="font-outfit font-black text-[#26352D]">

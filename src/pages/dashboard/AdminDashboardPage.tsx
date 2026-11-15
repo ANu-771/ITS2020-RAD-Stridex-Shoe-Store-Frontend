@@ -13,7 +13,8 @@ import {
   LayoutDashboard,
   Star,
   TicketPercent,
-  FileText
+  FileText,
+  Gift
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
@@ -27,6 +28,7 @@ import { AdminCustomersPage } from '../admin/AdminCustomersPage';
 import { AdminReviewsPage } from '../admin/AdminReviewsPage';
 import { AdminCouponsPage } from '../admin/AdminCouponsPage';
 import { AdminReportsPage } from '../admin/AdminReportsPage';
+import { AdminVouchersPage } from '../admin/AdminVouchersPage';
 
 type AdminTab = 
   | 'overview'
@@ -37,7 +39,8 @@ type AdminTab =
   | 'customers'
   | 'reviews'
   | 'coupons'
-  | 'reports';
+  | 'reports'
+  | 'vouchers';
 
 const VALID_TABS: AdminTab[] = [
   'overview',
@@ -48,7 +51,8 @@ const VALID_TABS: AdminTab[] = [
   'customers',
   'reviews',
   'coupons',
-  'reports'
+  'reports',
+  'vouchers'
 ];
 
 export const AdminDashboardPage: FC = () => {
@@ -230,6 +234,18 @@ export const AdminDashboardPage: FC = () => {
             <FileText className="w-4 h-4" />
             <span>Reports</span>
           </button>
+
+          <button
+            onClick={() => handleTabChange('vouchers')}
+            className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2 cursor-pointer ${
+              activeTab === 'vouchers'
+                ? 'bg-[#72C98A] text-white shadow-sm'
+                : 'text-[#718078] hover:text-[#26352D] hover:bg-[#F2FAF4]'
+            }`}
+          >
+            <Gift className="w-4 h-4" />
+            <span>Vouchers</span>
+          </button>
         </div>
 
         {/* Tab Content Display */}
@@ -242,6 +258,7 @@ export const AdminDashboardPage: FC = () => {
         {activeTab === 'reviews' && <AdminReviewsPage />}
         {activeTab === 'coupons' && <AdminCouponsPage />}
         {activeTab === 'reports' && <AdminReportsPage />}
+        {activeTab === 'vouchers' && <AdminVouchersPage />}
       </div>
     </div>
   );

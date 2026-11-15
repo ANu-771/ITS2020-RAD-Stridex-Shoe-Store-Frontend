@@ -12,6 +12,8 @@ import { CartPage } from '../pages/cart/CartPage';
 import { WishlistPage } from '../pages/wishlist/WishlistPage';
 import { CheckoutPage } from '../pages/checkout/CheckoutPage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
+import { GiftVouchersPage } from '../pages/vouchers/GiftVouchersPage';
+import { MyVouchersPage } from '../pages/vouchers/MyVouchersPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
@@ -36,6 +38,15 @@ export const AppRoutes: FC = () => {
         <Route path="wishlist" element={<WishlistPage />} />
         <Route path="checkout" element={<CheckoutPage />} />
         <Route path="orders" element={<OrdersPage />} />
+        <Route path="gift-vouchers" element={<GiftVouchersPage />} />
+        <Route
+          path="my-vouchers"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER, UserRole.ADMIN, UserRole.INVENTORY_MANAGER]}>
+              <MyVouchersPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Authentication Routes */}
         <Route path="login" element={<LoginPage />} />

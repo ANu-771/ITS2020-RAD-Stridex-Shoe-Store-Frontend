@@ -11,7 +11,9 @@ import {
   ShieldCheck, 
   Boxes,
   Heart,
-  Package
+  Package,
+  Gift,
+  Sparkles
 } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '../../utils/constants';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
@@ -117,6 +119,16 @@ export const Navbar: FC = () => {
               }`}
             >
               Brands
+            </Link>
+            <Link
+              to="/gift-vouchers"
+              className={`py-1 transition-colors duration-200 relative ${
+                isActiveRoute('/gift-vouchers') 
+                  ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
+                  : 'text-[#718078] hover:text-[#72C98A]'
+              }`}
+            >
+              Gift Vouchers
             </Link>
             <Link
               to="/about"
@@ -286,6 +298,24 @@ export const Navbar: FC = () => {
                     </Link>
 
                     <Link
+                      to="/my-vouchers"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
+                    >
+                      <Gift className="w-4 h-4 text-[#72C98A]" />
+                      <span>My Gift Vouchers</span>
+                    </Link>
+
+                    <Link
+                      to="/gift-vouchers"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#72C98A]" />
+                      <span>Buy Gift Voucher</span>
+                    </Link>
+
+                    <Link
                       to="/wishlist"
                       onClick={() => setUserDropdownOpen(false)}
                       className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
@@ -380,6 +410,13 @@ export const Navbar: FC = () => {
               Featured Brands
             </Link>
             <Link
+              to="/gift-vouchers"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+            >
+              Gift Vouchers
+            </Link>
+            <Link
               to="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
@@ -395,13 +432,22 @@ export const Navbar: FC = () => {
             </Link>
 
             {isAuthenticated && (
-              <Link
-                to="/orders"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
-              >
-                My Orders
-              </Link>
+              <>
+                <Link
+                  to="/orders"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+                >
+                  My Orders
+                </Link>
+                <Link
+                  to="/my-vouchers"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
+                >
+                  My Gift Vouchers
+                </Link>
+              </>
             )}
 
             {isAuthenticated && user?.role === 'ADMIN' && (
