@@ -8,7 +8,6 @@ import {
   Star, 
   CheckCircle2, 
   Mail, 
-  Cpu, 
   Zap, 
   ChevronRight,
   Percent
@@ -110,10 +109,6 @@ export const HomePage: FC = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  // AI Fit Recommendation Interactive State
-  const [quizGender, setQuizGender] = useState<'MEN' | 'WOMEN' | 'UNISEX'>('MEN');
-  const [quizGoal, setQuizGoal] = useState<'running' | 'daily' | 'formal'>('running');
 
   // Newsletter State
   const [newsletterEmail, setNewsletterEmail] = useState('');
@@ -527,94 +522,7 @@ export const HomePage: FC = () => {
       </section>
 
       {/* ======================================================== */}
-      {/* 6. AI RECOMMENDATION INTRODUCTION WIZARD                 */}
-      {/* ======================================================== */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-gradient-to-r from-[#26352D] to-[#1B2720] text-white p-8 sm:p-14 shadow-xl relative overflow-hidden">
-          <div className="relative z-10 max-w-2xl space-y-6">
-            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-wider bg-white/10 px-3.5 py-1 rounded-full backdrop-blur-xs">
-              <Cpu className="w-3.5 h-3.5" />
-              <span>Smart Footwear Advisory</span>
-            </div>
-            <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold leading-tight">
-              Find Your Perfect Fit with STRIDEX Smart Advisor
-            </h2>
-            <p className="text-sm sm:text-base text-[#DCEBE0]/80 leading-relaxed">
-              Unsure which model matches your arch, training routine, or daily commute? Select your preferences below for instant tailored suggestions.
-            </p>
-
-            {/* Quick Interactive Selector */}
-            <div className="pt-2 space-y-4">
-              <div className="space-y-1.5">
-                <span className="text-xs text-[#BDECCB] font-semibold uppercase">1. Who are you shopping for?</span>
-                <div className="flex gap-2">
-                  {(['MEN', 'WOMEN', 'UNISEX'] as const).map((g) => (
-                    <button
-                      key={g}
-                      type="button"
-                      onClick={() => setQuizGender(g)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                        quizGender === g
-                          ? 'bg-[#72C98A] text-white shadow-md'
-                          : 'bg-white/10 text-white/80 hover:bg-white/20'
-                      }`}
-                    >
-                      {g}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <span className="text-xs text-[#BDECCB] font-semibold uppercase">2. Primary activity?</span>
-                <div className="flex gap-2">
-                  {[
-                    { label: 'Running & Marathon', value: 'running', slug: 'running-athletic' },
-                    { label: 'Streetwear & Daily', value: 'daily', slug: 'casual-sneakers' },
-                    { label: 'Executive Formal', value: 'formal', slug: 'formal-leather' },
-                  ].map((goal) => (
-                    <button
-                      key={goal.value}
-                      type="button"
-                      onClick={() => setQuizGoal(goal.value as any)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                        quizGoal === goal.value
-                          ? 'bg-[#72C98A] text-white shadow-md'
-                          : 'bg-white/10 text-white/80 hover:bg-white/20'
-                      }`}
-                    >
-                      {goal.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <Link
-                  to={`/shop?gender=${quizGender}&category=${
-                    quizGoal === 'running'
-                      ? 'running-athletic'
-                      : quizGoal === 'daily'
-                      ? 'casual-sneakers'
-                      : 'formal-leather'
-                  }`}
-                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs shadow-lg transition-all"
-                >
-                  <span>View Tailored Shoes</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Decorative Background Circles */}
-          <div className="absolute -bottom-20 -right-20 w-96 h-96 rounded-full bg-[#72C98A]/20 blur-3xl pointer-events-none" />
-          <div className="absolute top-10 right-10 w-48 h-48 rounded-full bg-[#BDECCB]/15 blur-2xl pointer-events-none" />
-        </div>
-      </section>
-
-      {/* ======================================================== */}
-      {/* 7. CUSTOMER REVIEWS & TESTIMONIALS                       */}
+      {/* 6. CUSTOMER REVIEWS & TESTIMONIALS                       */}
       {/* ======================================================== */}
       <section className="py-16 bg-white border-y border-[#DCEBE0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
