@@ -68,6 +68,19 @@ export const Navbar: FC = () => {
     return location.pathname.startsWith(path);
   };
 
+  const handleNavClick = (targetPath: string) => {
+    if (location.pathname === targetPath) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleMobileNavClick = (targetPath: string) => {
+    setMobileMenuOpen(false);
+    if (location.pathname === targetPath) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       {/* Top subtle announcement micro-bar */}
@@ -80,7 +93,7 @@ export const Navbar: FC = () => {
         <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-[#DCEBE0] shadow-sm px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between transition-all duration-300">
           {/* Left: Brand Logo & Tagline */}
           <div className="flex items-center space-x-3">
-            <Link to="/" className="flex flex-col group">
+            <Link to="/" onClick={() => handleNavClick('/')} className="flex flex-col group">
               <span className="font-outfit text-2xl sm:text-3xl font-extrabold tracking-wider text-[#26352D] transition-colors">
                 {APP_NAME}
                 <span className="text-[#72C98A] transition-transform duration-300 inline-block group-hover:scale-125">.</span>
@@ -95,6 +108,7 @@ export const Navbar: FC = () => {
           <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium">
             <Link
               to="/"
+              onClick={() => handleNavClick('/')}
               className={`py-1 transition-colors duration-200 relative ${
                 isActiveRoute('/') 
                   ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
@@ -105,6 +119,7 @@ export const Navbar: FC = () => {
             </Link>
             <Link
               to="/shop"
+              onClick={() => handleNavClick('/shop')}
               className={`py-1 transition-colors duration-200 relative ${
                 isActiveRoute('/shop') 
                   ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
@@ -115,6 +130,7 @@ export const Navbar: FC = () => {
             </Link>
             <Link
               to="/brands"
+              onClick={() => handleNavClick('/brands')}
               className={`py-1 transition-colors duration-200 relative ${
                 isActiveRoute('/brands') 
                   ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
@@ -125,6 +141,7 @@ export const Navbar: FC = () => {
             </Link>
             <Link
               to="/gift-vouchers"
+              onClick={() => handleNavClick('/gift-vouchers')}
               className={`py-1 transition-colors duration-200 relative ${
                 isActiveRoute('/gift-vouchers') 
                   ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
@@ -135,6 +152,7 @@ export const Navbar: FC = () => {
             </Link>
             <Link
               to="/about"
+              onClick={() => handleNavClick('/about')}
               className={`py-1 transition-colors duration-200 relative ${
                 isActiveRoute('/about') 
                   ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
@@ -145,6 +163,7 @@ export const Navbar: FC = () => {
             </Link>
             <Link
               to="/contact"
+              onClick={() => handleNavClick('/contact')}
               className={`py-1 transition-colors duration-200 relative ${
                 isActiveRoute('/contact') 
                   ? 'text-[#26352D] font-bold after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#72C98A] after:rounded-full' 
@@ -393,35 +412,35 @@ export const Navbar: FC = () => {
 
             <Link
               to="/"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => handleMobileNavClick('/')}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
               Home
             </Link>
             <Link
               to="/shop"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => handleMobileNavClick('/shop')}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
               Shop All Footwear
             </Link>
             <Link
               to="/brands"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => handleMobileNavClick('/brands')}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
               Featured Brands
             </Link>
             <Link
               to="/gift-vouchers"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => handleMobileNavClick('/gift-vouchers')}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
               Gift Vouchers
             </Link>
             <Link
               to="/about"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => handleMobileNavClick('/about')}
               className="block px-3 py-2 rounded-xl text-sm font-medium text-[#26352D] hover:bg-[#F2FAF4]"
             >
               About STRIDEX

@@ -5,6 +5,12 @@ import { ShieldCheck, Truck, RefreshCw, Headphones, MapPin, Phone, Mail } from '
 import stridexStudioPortrait from '../../assets/STRIDEX Studio Sneaker Portrait.png';
 
 export const Footer: FC = () => {
+  const handleFooterNav = (targetPath: string) => {
+    if (window.location.pathname === targetPath) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-white text-[#26352D] pt-12 pb-8 border-t border-[#DCEBE0] relative overflow-hidden">
       {/* 1. Value propositions strip */}
@@ -122,23 +128,23 @@ export const Footer: FC = () => {
             <div>
               <h5 className="font-outfit text-[#26352D] font-bold mb-3 text-sm">Shop Collection</h5>
               <ul className="space-y-2 text-xs">
-                <li><Link to="/shop" className="text-[#718078] hover:text-[#72C98A] transition-colors">All Footwear</Link></li>
-                <li><Link to="/shop?gender=MEN" className="text-[#718078] hover:text-[#72C98A] transition-colors">Men's Sneakers</Link></li>
-                <li><Link to="/shop?gender=WOMEN" className="text-[#718078] hover:text-[#72C98A] transition-colors">Women's Collection</Link></li>
-                <li><Link to="/brands" className="text-[#718078] hover:text-[#72C98A] transition-colors">Partner Brands</Link></li>
-                <li><Link to="/gift-vouchers" className="text-[#718078] hover:text-[#72C98A] transition-colors">Digital Gift Vouchers</Link></li>
-                <li><Link to="/my-vouchers" className="text-[#718078] hover:text-[#72C98A] transition-colors">My Gift Vouchers</Link></li>
-                <li><Link to="/shop?filter=featured" className="text-[#718078] hover:text-[#72C98A] transition-colors">Featured Drops</Link></li>
+                <li><Link to="/shop" onClick={() => handleFooterNav('/shop')} className="text-[#718078] hover:text-[#72C98A] transition-colors">All Footwear</Link></li>
+                <li><Link to="/shop?gender=MEN" onClick={() => handleFooterNav('/shop')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Men's Sneakers</Link></li>
+                <li><Link to="/shop?gender=WOMEN" onClick={() => handleFooterNav('/shop')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Women's Collection</Link></li>
+                <li><Link to="/brands" onClick={() => handleFooterNav('/brands')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Partner Brands</Link></li>
+                <li><Link to="/gift-vouchers" onClick={() => handleFooterNav('/gift-vouchers')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Digital Gift Vouchers</Link></li>
+                <li><Link to="/my-vouchers" onClick={() => handleFooterNav('/my-vouchers')} className="text-[#718078] hover:text-[#72C98A] transition-colors">My Gift Vouchers</Link></li>
+                <li><Link to="/shop?filter=featured" onClick={() => handleFooterNav('/shop')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Featured Drops</Link></li>
               </ul>
             </div>
 
             <div>
               <h5 className="font-outfit text-[#26352D] font-bold mb-3 text-sm">Company & Care</h5>
               <ul className="space-y-2 text-xs">
-                <li><Link to="/about" className="text-[#718078] hover:text-[#72C98A] transition-colors">About STRIDEX</Link></li>
-                <li><Link to="/contact" className="text-[#718078] hover:text-[#72C98A] transition-colors">Showroom & Contact</Link></li>
-                <li><Link to="/contact#faq" className="text-[#718078] hover:text-[#72C98A] transition-colors">Size Guide & FAQs</Link></li>
-                <li><Link to="/shop" className="text-[#718078] hover:text-[#72C98A] transition-colors">Island-wide Shipping</Link></li>
+                <li><Link to="/about" onClick={() => handleFooterNav('/about')} className="text-[#718078] hover:text-[#72C98A] transition-colors">About STRIDEX</Link></li>
+                <li><Link to="/contact" onClick={() => handleFooterNav('/contact')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Showroom & Contact</Link></li>
+                <li><Link to="/contact#faq" onClick={() => handleFooterNav('/contact')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Size Guide & FAQs</Link></li>
+                <li><Link to="/shop" onClick={() => handleFooterNav('/shop')} className="text-[#718078] hover:text-[#72C98A] transition-colors">Island-wide Shipping</Link></li>
               </ul>
             </div>
 

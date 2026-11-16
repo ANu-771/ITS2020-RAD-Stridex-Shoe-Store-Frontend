@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { FC } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
 import { CartDrawer } from '../components/cart/CartDrawer';
@@ -13,6 +13,23 @@ import { fetchServerWishlist } from '../store/slices/wishlistSlice';
 export const RootLayout: FC = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { pathname, search, hash } = useLocation();
+
+  // Scroll window to top whenever route/pathname changes
+  useEffect(() => {
+    if (hash) {
+      const element = document.getElementById(hash.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant',
+    });
+  }, [pathname, search, hash]);
 
   useEffect(() => {
     if (isAuthenticated) {
