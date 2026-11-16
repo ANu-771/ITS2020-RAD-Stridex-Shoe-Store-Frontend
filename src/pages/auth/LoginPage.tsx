@@ -142,9 +142,12 @@ export const LoginPage: FC = () => {
               <label className="block text-xs font-semibold text-[#26352D]">
                 Password
               </label>
-              <span className="text-[11px] text-[#72C98A] hover:underline cursor-pointer">
+              <Link
+                to="/forgot-password"
+                className="text-[11px] text-[#72C98A] hover:underline font-medium"
+              >
                 Forgot password?
-              </span>
+              </Link>
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#718078]">

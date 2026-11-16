@@ -45,4 +45,26 @@ export const authService = {
     const response = await api.post<{ success: boolean; message: string }>('/auth/logout');
     return response.data;
   },
+
+  // Request password reset OTP
+  forgotPassword: async (email: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.post<{ success: boolean; message: string }>(
+      '/auth/forgot-password',
+      { email }
+    );
+    return response.data;
+  },
+
+  // Verify OTP and reset password
+  resetPassword: async (payload: {
+    email: string;
+    otp: string;
+    newPassword: string;
+  }): Promise<{ success: boolean; message: string }> => {
+    const response = await api.post<{ success: boolean; message: string }>(
+      '/auth/reset-password',
+      payload
+    );
+    return response.data;
+  },
 };

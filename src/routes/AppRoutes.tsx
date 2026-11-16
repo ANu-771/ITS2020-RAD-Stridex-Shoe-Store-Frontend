@@ -17,6 +17,7 @@ import { MyVouchersPage } from '../pages/vouchers/MyVouchersPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
+import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage';
 import { AdminDashboardPage } from '../pages/dashboard/AdminDashboardPage';
 import { InventoryDashboardPage } from '../pages/dashboard/InventoryDashboardPage';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
@@ -51,6 +52,7 @@ export const AppRoutes: FC = () => {
         {/* Authentication Routes */}
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
 
         {/* Role-Protected Admin Dashboard */}
         <Route
