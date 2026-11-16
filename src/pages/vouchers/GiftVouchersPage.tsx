@@ -19,6 +19,7 @@ import { giftVoucherService } from '../../services/giftVoucherService';
 import { formatLKR } from '../../utils/currency';
 import { useToast } from '../../context/ToastContext';
 import Swal from 'sweetalert2';
+import voucherStudioPortrait from '../../assets/Stridex Gift Vouchers Studio Portrait_optimized_q95.webp';
 
 const APPROVED_AMOUNTS = [2500, 5000, 10000, 15000] as const;
 
@@ -154,30 +155,49 @@ export const GiftVouchersPage: FC = () => {
         {/* ======================================================== */}
         {/* 1. HERO BANNER */}
         {/* ======================================================== */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#071A33] via-[#0B2D52] to-[#1677FF]/40 text-white p-8 sm:p-12 shadow-xl border border-white/10">
-          <div className="absolute -right-12 -top-12 w-64 h-64 bg-[#72C98A]/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 max-w-2xl space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-[#72C98A] text-xs font-semibold tracking-wide uppercase">
+        <div className="relative overflow-hidden rounded-3xl bg-[linear-gradient(105deg,#13301D_0%,#1B432A_20%,#238F0D_40%,#5BB877_58%,#A3DFB6_74%,#E3F4EA_88%,#FFFFFF_100%)] text-white p-8 sm:p-12 border border-[#BDECCB]/50 shadow-[0_20px_50px_rgba(35,143,13,0.28),0_0_35px_rgba(114,201,138,0.25)]">
+          {/* Light-Green Ambient Glow in Left Corner */}
+          <div className="absolute -left-12 -top-12 w-80 h-80 bg-[#72C98A]/20 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Right Corner: Studio Model with STRIDEX Gift Vouchers (Smooth Shading Blend from Image Left Edge) */}
+          <div
+            className="absolute right-0 top-0 bottom-0 w-full sm:w-[55%] lg:w-[48%] xl:w-[45%] flex items-end justify-end pointer-events-none select-none z-0 overflow-hidden"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 20%, black 45%, black 100%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 20%, black 45%, black 100%)',
+            }}
+          >
+            <img
+              src={voucherStudioPortrait}
+              alt="STRIDEX Official Gift Vouchers Model"
+              className="h-full w-full object-cover object-top sm:object-contain sm:object-right-bottom opacity-100 drop-shadow-xl transition-transform duration-700 hover:scale-[1.02]"
+              loading="lazy"
+            />
+          </div>
+
+          {/* Left Corner Content */}
+          <div className="relative z-10 max-w-xl lg:max-w-2xl space-y-4">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-black/25 backdrop-blur-md text-[#A8F0BE] text-xs font-semibold tracking-wide uppercase border border-white/20">
               <ShoeAvatarIcon className="w-4 h-4" />
               <span>STRIDEX Digital Footwear Voucher</span>
             </div>
-            <h1 className="font-outfit text-4xl sm:text-5xl font-extrabold tracking-tight">
-              Give the Gift of <span className="text-[#72C98A]">Premium Style</span>
+            <h1 className="font-outfit text-4xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
+              Give the Gift of <span className="text-[#A8F0BE]">Premium Style</span>
             </h1>
-            <p className="text-sm sm:text-base text-gray-200 leading-relaxed font-inter">
+            <p className="text-sm sm:text-base text-white/95 leading-relaxed font-inter drop-shadow-2xs">
               Delight your friends and family with the ultimate choice in athletic footwear. Purchase a STRIDEX digital gift voucher online and let them step into their style with authentic sneakers.
             </p>
             <div className="pt-2 flex flex-wrap gap-4 text-xs font-semibold">
-              <span className="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-xl">
-                <CheckCircle2 className="w-4 h-4 text-[#72C98A]" />
+              <span className="flex items-center space-x-1.5 bg-black/25 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 text-white shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-[#A8F0BE]" />
                 <span>100% Digital & Instant Account Delivery</span>
               </span>
-              <span className="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-xl">
-                <CheckCircle2 className="w-4 h-4 text-[#72C98A]" />
+              <span className="flex items-center space-x-1.5 bg-black/25 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 text-white shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-[#A8F0BE]" />
                 <span>Valid for 365 Days</span>
               </span>
-              <span className="flex items-center space-x-1.5 bg-white/10 px-3 py-1.5 rounded-xl">
-                <CheckCircle2 className="w-4 h-4 text-[#72C98A]" />
+              <span className="flex items-center space-x-1.5 bg-black/25 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 text-white shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-[#A8F0BE]" />
                 <span>Redeemable Across Entire Catalog</span>
               </span>
             </div>

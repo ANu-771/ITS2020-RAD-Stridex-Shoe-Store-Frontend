@@ -115,10 +115,10 @@ export const LoginPage: FC = () => {
         )}
 
         {/* Login Form */}
-        <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-5" onSubmit={handleSubmit} autoComplete="on">
           {/* Email field */}
           <div>
-            <label className="block text-xs font-semibold text-[#26352D] mb-1.5">
+            <label htmlFor="email" className="block text-xs font-semibold text-[#26352D] mb-1.5">
               Email Address
             </label>
             <div className="relative">
@@ -126,7 +126,10 @@ export const LoginPage: FC = () => {
                 <Mail className="w-4 h-4" />
               </div>
               <input
+                id="email"
+                name="email"
                 type="email"
+                autoComplete="username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -139,7 +142,7 @@ export const LoginPage: FC = () => {
           {/* Password field */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-[#26352D]">
+              <label htmlFor="password" className="block text-xs font-semibold text-[#26352D]">
                 Password
               </label>
               <Link
@@ -154,7 +157,10 @@ export const LoginPage: FC = () => {
                 <Lock className="w-4 h-4" />
               </div>
               <input
+                id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -187,13 +193,6 @@ export const LoginPage: FC = () => {
             )}
           </button>
         </form>
-
-        {/* Demo credentials hint box */}
-        <div className="p-3.5 bg-[#DDF3E2]/60 rounded-xl border border-[#BDECCB] text-[11px] text-[#26352D] space-y-1">
-          <div className="font-semibold text-[#26352D]">Demo Accounts for Review:</div>
-          <div>Admin: <code className="bg-white px-1 py-0.5 rounded">admin@stridex.com</code> / <code className="bg-white px-1 py-0.5 rounded">Admin@Stridex2026!</code></div>
-          <div>Manager: <code className="bg-white px-1 py-0.5 rounded">inventory@stridex.com</code> / <code className="bg-white px-1 py-0.5 rounded">Manager@Stridex2026!</code></div>
-        </div>
 
         {/* Footer Link */}
         <div className="text-center pt-2 border-t border-[#DCEBE0]">

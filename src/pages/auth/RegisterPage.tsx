@@ -113,10 +113,10 @@ export const RegisterPage: FC = () => {
         )}
 
         {/* Registration Form */}
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit} autoComplete="off">
           {/* Full Name */}
           <div>
-            <label className="block text-xs font-semibold text-[#26352D] mb-1">
+            <label htmlFor="fullName" className="block text-xs font-semibold text-[#26352D] mb-1">
               Full Name *
             </label>
             <div className="relative">
@@ -124,7 +124,10 @@ export const RegisterPage: FC = () => {
                 <UserIcon className="w-4 h-4" />
               </div>
               <input
+                id="fullName"
+                name="fullName"
                 type="text"
+                autoComplete="name"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -136,7 +139,7 @@ export const RegisterPage: FC = () => {
 
           {/* Email Address */}
           <div>
-            <label className="block text-xs font-semibold text-[#26352D] mb-1">
+            <label htmlFor="email" className="block text-xs font-semibold text-[#26352D] mb-1">
               Email Address *
             </label>
             <div className="relative">
@@ -144,7 +147,10 @@ export const RegisterPage: FC = () => {
                 <Mail className="w-4 h-4" />
               </div>
               <input
+                id="email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -156,7 +162,7 @@ export const RegisterPage: FC = () => {
 
           {/* Phone Number */}
           <div>
-            <label className="block text-xs font-semibold text-[#26352D] mb-1">
+            <label htmlFor="phone" className="block text-xs font-semibold text-[#26352D] mb-1">
               Phone Number (Optional)
             </label>
             <div className="relative">
@@ -164,7 +170,10 @@ export const RegisterPage: FC = () => {
                 <Phone className="w-4 h-4" />
               </div>
               <input
+                id="phone"
+                name="phone"
                 type="tel"
+                autoComplete="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+1 555-0199"
@@ -175,7 +184,7 @@ export const RegisterPage: FC = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-semibold text-[#26352D] mb-1">
+            <label htmlFor="password" className="block text-xs font-semibold text-[#26352D] mb-1">
               Password * (Min 6 characters)
             </label>
             <div className="relative">
@@ -183,7 +192,10 @@ export const RegisterPage: FC = () => {
                 <Lock className="w-4 h-4" />
               </div>
               <input
+                id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -202,7 +214,7 @@ export const RegisterPage: FC = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-xs font-semibold text-[#26352D] mb-1">
+            <label htmlFor="confirmPassword" className="block text-xs font-semibold text-[#26352D] mb-1">
               Confirm Password *
             </label>
             <div className="relative">
@@ -210,7 +222,10 @@ export const RegisterPage: FC = () => {
                 <Lock className="w-4 h-4" />
               </div>
               <input
+                id="confirmPassword"
+                name="confirmPassword"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
