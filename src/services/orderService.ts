@@ -118,7 +118,7 @@ export interface AdminOrdersParams {
 }
 
 export const orderService = {
-  createOrder: async (payload: CreateOrderPayload): Promise<{ success: boolean; message: string; data: Order }> => {
+  createOrder: async (payload: CreateOrderPayload): Promise<{ success: boolean; message: string; data: Order; emailSent?: boolean }> => {
     const res = await api.post('/orders', payload);
     return res.data;
   },

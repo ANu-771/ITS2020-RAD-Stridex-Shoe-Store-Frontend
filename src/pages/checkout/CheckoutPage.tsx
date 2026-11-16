@@ -14,6 +14,7 @@ import {
   Clock,
   Gift,
   Tag,
+  Mail,
   X
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
@@ -47,6 +48,7 @@ export const CheckoutPage: FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+  const [orderEmailSent, setOrderEmailSent] = useState<boolean | null>(null);
 
   const handleCardPaymentClick = (e?: React.MouseEvent) => {
     if (e) {
@@ -188,6 +190,7 @@ export const CheckoutPage: FC = () => {
       const res = await orderService.createOrder(payload);
       if (res.success && res.data) {
         setConfirmedOrder(res.data);
+        setOrderEmailSent(res.emailSent ?? true);
         dispatch(clearCart());
         showToast('Order confirmed successfully!', 'success');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -230,6 +233,21 @@ export const CheckoutPage: FC = () => {
             <p className="text-xs sm:text-sm text-[#718078] max-w-md mx-auto">
               Your order has been placed successfully and allocated directly from our warehouse.
             </p>
+            {orderEmailSent === true ? (
+              <div className="pt-1">
+                <span className="inline-flex items-center space-x-1.5 text-xs text-[#35A866] font-medium bg-[#DDF3E2] px-3.5 py-1.5 rounded-full border border-[#BDECCB]">
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>A confirmation email with your order receipt has been sent to <strong>{confirmedOrder.customerDetails.email}</strong></span>
+                </span>
+              </div>
+            ) : orderEmailSent === false ? (
+              <div className="pt-1">
+                <span className="inline-flex items-center space-x-1.5 text-xs text-[#718078] bg-[#F2FAF4] px-3.5 py-1.5 rounded-full border border-[#DCEBE0]">
+                  <Mail className="w-3.5 h-3.5 text-[#718078]" />
+                  <span>Confirmation receipt could not be emailed at this moment. You can view all details in your order history.</span>
+                </span>
+              </div>
+            ) : null}
           </div>
 
           {/* Order Details Badge */}
