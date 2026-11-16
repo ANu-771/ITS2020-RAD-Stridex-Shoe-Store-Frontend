@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { categoryService } from '../../services/categoryService';
 import { productService } from '../../services/productService';
 import type { Category, Product } from '../../types';
@@ -52,7 +53,7 @@ export const CategoryPage: FC = () => {
       <div className="relative rounded-3xl bg-gradient-to-r from-[#DDF3E2] via-white to-[#F2FAF4] border border-[#DCEBE0] p-8 sm:p-12 mb-10 overflow-hidden shadow-xs">
         <div className="max-w-2xl relative z-10 space-y-3">
           <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-[#DCEBE0]">
-            <Sparkles className="w-3.5 h-3.5" />
+            <ShoeAvatarIcon className="w-3.5 h-3.5" />
             <span>Category Spotlight</span>
           </div>
           <h1 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">

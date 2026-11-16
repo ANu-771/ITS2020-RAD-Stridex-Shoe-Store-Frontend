@@ -11,10 +11,10 @@ import {
   ChevronLeft, 
   ChevronRight,
   RefreshCw,
-  Sparkles,
   CheckCircle2,
   XCircle
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { productService } from '../../services/productService';
 import type { ProductQueryParams } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
@@ -374,7 +374,7 @@ export const AdminProductsPage: FC = () => {
 
                           {p.isFeatured && (
                             <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#72C98A]/20 text-[#26352D]">
-                              <Sparkles className="w-3 h-3 text-[#59B976]" />
+                              <ShoeAvatarIcon className="w-3 h-3 text-[#59B976]" />
                               <span>Featured</span>
                             </span>
                           )}

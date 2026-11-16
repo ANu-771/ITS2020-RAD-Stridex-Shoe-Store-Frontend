@@ -22,9 +22,9 @@ import {
   TrendingUp, 
   ArrowUpRight, 
   ArrowRight,
-  ShieldAlert,
-  Sparkles
+  ShieldAlert
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { adminDashboardService } from '../../services/adminDashboardService';
 import type { AdminDashboardMetrics } from '../../services/adminDashboardService';
 import { formatLKR } from '../../utils/currency';
@@ -178,7 +178,7 @@ export const AdminOverviewPage: FC<AdminOverviewPageProps> = ({ onNavigateTab })
       {/* Quick Actions Action Bar */}
       <div className="p-4 bg-white rounded-2xl border border-[#DCEBE0] shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
         <span className="font-bold text-[#26352D] flex items-center space-x-2">
-          <Sparkles className="w-4 h-4 text-[#72C98A]" />
+          <ShoeAvatarIcon className="w-4 h-4 text-[#72C98A]" />
           <span>Quick Admin Shortcuts:</span>
         </span>
 

@@ -1,5 +1,6 @@
 import type { FC } from 'react';
-import { X, Sparkles, Layers, CheckCircle2 } from 'lucide-react';
+import { X, Layers, CheckCircle2 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { formatLKR } from '../../utils/currency';
 import type { Product, Brand, Category } from '../../types';
 
@@ -125,7 +126,7 @@ export const ProductDetailsModal: FC<ProductDetailsModalProps> = ({
                 <div className="font-bold text-[#26352D] mt-0.5 flex items-center space-x-1">
                   {product.isFeatured ? (
                     <>
-                      <Sparkles className="w-3.5 h-3.5 text-[#59B976]" />
+                      <ShoeAvatarIcon className="w-3.5 h-3.5 text-[#59B976]" />
                       <span className="text-[#59B976]">Hero Featured</span>
                     </>
                   ) : (

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { brandService } from '../../services/brandService';
 import type { Brand } from '../../types';
 
@@ -31,7 +32,7 @@ export const BrandsPage: FC = () => {
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
         <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest bg-[#DDF3E2] px-3.5 py-1 rounded-full border border-[#BDECCB]">
-          <Sparkles className="w-3.5 h-3.5" />
+          <ShoeAvatarIcon className="w-3.5 h-3.5" />
           <span>Curated Global Partners</span>
         </div>
         <h1 className="font-outfit text-3xl sm:text-5xl font-extrabold text-[#26352D]">

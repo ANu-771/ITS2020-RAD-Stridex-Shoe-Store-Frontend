@@ -12,9 +12,9 @@ import {
   Boxes,
   Heart,
   Package,
-  Gift,
-  Sparkles
+  Gift
 } from 'lucide-react';
+import { ShoeAvatarIcon } from './ShoeAvatarIcon';
 import { APP_NAME, APP_TAGLINE } from '../../utils/constants';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
@@ -314,7 +314,7 @@ export const Navbar: FC = () => {
                       onClick={() => setUserDropdownOpen(false)}
                       className="flex items-center space-x-2 px-4 py-2.5 text-[#26352D] hover:bg-[#F2FAF4] transition-colors"
                     >
-                      <Sparkles className="w-4 h-4 text-[#72C98A]" />
+                      <ShoeAvatarIcon className="w-4 h-4 text-[#72C98A]" />
                       <span>Buy Gift Voucher</span>
                     </Link>
 

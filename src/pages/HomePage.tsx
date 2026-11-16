@@ -5,7 +5,6 @@ import {
   ArrowRight, 
   TrendingUp, 
   Tag, 
-  Sparkles, 
   Star, 
   CheckCircle2, 
   Mail, 
@@ -14,6 +13,7 @@ import {
   ChevronRight,
   Percent
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../components/common/ShoeAvatarIcon';
 import heroShoe from '../assets/home_page_shoe.png';
 import { HeroVideoBackground } from '../components/home/HeroVideoBackground';
 import { productService } from '../services/productService';
@@ -380,7 +380,7 @@ export const HomePage: FC = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
             <div>
               <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
-                <Sparkles className="w-4 h-4 text-[#72C98A]" />
+                <ShoeAvatarIcon className="w-4 h-4 text-[#72C98A]" />
                 <span>Trending Footwear Drops</span>
               </div>
               <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">

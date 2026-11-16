@@ -8,12 +8,12 @@ import {
   CreditCard,
   Banknote,
   Send,
-  Sparkles,
   ShieldCheck,
   ArrowRight,
   Clock,
   Info,
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { useAppSelector } from '../../hooks/reduxHooks';
 import { giftVoucherService } from '../../services/giftVoucherService';
 import { formatLKR } from '../../utils/currency';
@@ -158,7 +158,7 @@ export const GiftVouchersPage: FC = () => {
           <div className="absolute -right-12 -top-12 w-64 h-64 bg-[#72C98A]/20 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 max-w-2xl space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-[#72C98A] text-xs font-semibold tracking-wide uppercase">
-              <Sparkles className="w-4 h-4" />
+              <ShoeAvatarIcon className="w-4 h-4" />
               <span>STRIDEX Digital Footwear Voucher</span>
             </div>
             <h1 className="font-outfit text-4xl sm:text-5xl font-extrabold tracking-tight">

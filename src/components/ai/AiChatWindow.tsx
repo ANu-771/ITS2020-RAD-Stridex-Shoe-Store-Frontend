@@ -3,11 +3,11 @@ import {
   Send,
   X,
   RotateCcw,
-  Sparkles,
   User,
   ShoppingBag,
   Info,
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../common/ShoeAvatarIcon';
 import type { ChatMessage } from '../../types/ai.types';
 import { AiProductRecommendationCard } from './AiProductRecommendationCard';
 import stridexChatbotAvatar from '../../assets/stridex_chatbot.webp';
@@ -137,7 +137,7 @@ export const AiChatWindow: React.FC<AiChatWindowProps> = ({
         {/* Welcome Card */}
         <div className="bg-white border border-[#DCEBE0] rounded-xl p-3.5 shadow-xs space-y-2.5">
           <div className="flex items-center gap-2 text-[#72C98A]">
-            <Sparkles className="w-4 h-4" />
+            <ShoeAvatarIcon className="w-4 h-4" />
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#26352D]">
               Welcome to STRIDEX Footwear Assistant!
             </h4>

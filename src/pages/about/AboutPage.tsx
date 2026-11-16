@@ -5,9 +5,9 @@ import {
   ShieldCheck, 
   HeartHandshake, 
   ArrowRight,
-  Sparkles,
   Truck
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { APP_NAME } from '../../utils/constants';
 
 export const AboutPage: FC = () => {
@@ -64,7 +64,7 @@ export const AboutPage: FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8 space-y-4">
             <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-wider bg-white px-3 py-1 rounded-full border border-[#DCEBE0]">
-              <Sparkles className="w-4 h-4" />
+              <ShoeAvatarIcon className="w-4 h-4" />
               <span>Premium Footwear Heritage & Innovation</span>
             </div>
             <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">

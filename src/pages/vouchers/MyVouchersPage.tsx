@@ -9,11 +9,11 @@ import {
   ArrowRight,
   AlertCircle,
   ShoppingBag,
-  Sparkles,
   Calendar,
   User,
   RefreshCw,
 } from 'lucide-react';
+import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { giftVoucherService } from '../../services/giftVoucherService';
 import type { GiftVoucher, GiftVoucherPurchasedGift } from '../../services/giftVoucherService';
 import { formatLKR } from '../../utils/currency';
@@ -87,7 +87,7 @@ export const MyVouchersPage: FC = () => {
               to="/gift-vouchers"
               className="px-5 py-2.5 rounded-xl bg-[#72C98A] hover:bg-[#59B976] text-white text-xs font-bold shadow-sm transition-all flex items-center space-x-2 cursor-pointer"
             >
-              <Sparkles className="w-4 h-4" />
+              <ShoeAvatarIcon className="w-4 h-4" />
               <span>Buy Gift Voucher</span>
             </Link>
           </div>
