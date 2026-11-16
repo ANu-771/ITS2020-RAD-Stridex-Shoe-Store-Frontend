@@ -4,11 +4,11 @@ import {
   Award, 
   ShieldCheck, 
   HeartHandshake, 
-  ArrowRight,
-  Truck
+  ArrowRight
 } from 'lucide-react';
 import { ShoeAvatarIcon } from '../../components/common/ShoeAvatarIcon';
 import { APP_NAME } from '../../utils/constants';
+import nieraEditorialImg from '../../assets/Niera8268_1.webp';
 
 export const AboutPage: FC = () => {
   return (
@@ -89,19 +89,38 @@ export const AboutPage: FC = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col items-center justify-center text-center p-6 bg-white rounded-2xl border border-[#DCEBE0] space-y-3">
-            <Truck className="w-10 h-10 text-[#72C98A]" />
-            <h4 className="font-outfit font-bold text-base text-[#26352D]">Direct Island-Wide Express</h4>
-            <p className="text-xs text-[#718078]">
-              Seamless express doorstep delivery across Sri Lanka with Cash on Delivery and Direct Bank Transfer support.
-            </p>
-            <Link
-              to="/shop"
-              className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#72C98A] hover:text-[#59B976] pt-2"
-            >
-              <span>Explore the Live Store</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+          {/* Streetwear Lookbook Editorial Card */}
+          <div className="lg:col-span-4 relative rounded-3xl overflow-hidden bg-white border border-[#DCEBE0] shadow-sm group">
+            <div className="relative h-80 sm:h-96 w-full overflow-hidden">
+              <img
+                src={nieraEditorialImg}
+                alt="STRIDEX Streetwear & Lifestyle Editorial"
+                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#26352D] via-[#26352D]/20 to-transparent pointer-events-none" />
+
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white space-y-2 z-10">
+                <span className="inline-flex items-center space-x-1 text-[10px] font-bold uppercase tracking-wider text-[#72C98A] bg-white/20 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/10">
+                  <span>STRIDEX Editorial</span>
+                </span>
+                <h4 className="font-outfit font-bold text-base sm:text-lg text-white leading-snug">
+                  Modern Streetwear & Athletic Fusion
+                </h4>
+                <p className="text-[11px] text-[#DCEBE0]/80 leading-relaxed line-clamp-2">
+                  Real street fashion tailored for style and comfort across Sri Lanka.
+                </p>
+                <div className="pt-1">
+                  <Link
+                    to="/shop"
+                    className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#72C98A] hover:text-white transition-colors"
+                  >
+                    <span>Explore Collection</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
