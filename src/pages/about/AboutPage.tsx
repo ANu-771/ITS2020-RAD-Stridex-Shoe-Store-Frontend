@@ -5,8 +5,8 @@ import {
   ShieldCheck, 
   HeartHandshake, 
   ArrowRight,
-  Code2,
-  GraduationCap
+  Sparkles,
+  Truck
 } from 'lucide-react';
 import { APP_NAME } from '../../utils/constants';
 
@@ -59,41 +59,41 @@ export const AboutPage: FC = () => {
         </div>
       </section>
 
-      {/* RAD Coursework Capstone Spotlight */}
+      {/* Brand Craftsmanship & Heritage Spotlight */}
       <section className="bg-gradient-to-r from-white via-[#F2FAF4] to-white rounded-3xl border border-[#DCEBE0] p-8 sm:p-12 shadow-xs">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8 space-y-4">
             <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-wider bg-white px-3 py-1 rounded-full border border-[#DCEBE0]">
-              <GraduationCap className="w-4 h-4" />
-              <span>IJSE Academic Capstone Project</span>
+              <Sparkles className="w-4 h-4" />
+              <span>Premium Footwear Heritage & Innovation</span>
             </div>
             <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">
-              Institute of Software Engineering (IJSE)
+              Curated for Performance, Styled for Sri Lankan Streets
             </h2>
             <p className="text-xs sm:text-sm text-[#718078] leading-relaxed">
-              STRIDEX is developed as the official final coursework for the <strong>Rapid Application Development (RAD)</strong> module in the <strong>Graduate Diploma in Software Engineering (GDSE)</strong>.
+              At STRIDEX, we partner directly with certified global distributors and authorized partners to bring genuine athletic, running, and lifestyle footwear to sneaker enthusiasts across all 9 provinces in Sri Lanka.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2 text-xs">
               <div className="p-3 bg-white rounded-xl border border-[#DCEBE0]">
-                <span className="text-[#718078] block">Coursework Code</span>
-                <strong className="text-[#26352D] font-mono">ITS2020 (RAD)</strong>
+                <span className="text-[#718078] block">Authenticity</span>
+                <strong className="text-[#26352D]">100% Verified Pairs</strong>
               </div>
               <div className="p-3 bg-white rounded-xl border border-[#DCEBE0]">
-                <span className="text-[#718078] block">Architecture</span>
-                <strong className="text-[#26352D]">MERN + TypeScript</strong>
+                <span className="text-[#718078] block">Delivery Reach</span>
+                <strong className="text-[#26352D]">All 25 Districts</strong>
               </div>
               <div className="p-3 bg-white rounded-xl border border-[#DCEBE0]">
-                <span className="text-[#718078] block">Database & Storage</span>
-                <strong className="text-[#26352D]">MongoDB + Supabase</strong>
+                <span className="text-[#718078] block">Exchange Policy</span>
+                <strong className="text-[#26352D]">7-Day Hassle-Free</strong>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-4 flex flex-col items-center justify-center text-center p-6 bg-white rounded-2xl border border-[#DCEBE0] space-y-3">
-            <Code2 className="w-10 h-10 text-[#72C98A]" />
-            <h4 className="font-outfit font-bold text-base text-[#26352D]">Role-Based Architecture</h4>
+            <Truck className="w-10 h-10 text-[#72C98A]" />
+            <h4 className="font-outfit font-bold text-base text-[#26352D]">Direct Island-Wide Express</h4>
             <p className="text-xs text-[#718078]">
-              Seamlessly integrates Customer storefront, Inventory management, and Super-admin consoles with JWT security.
+              Seamless express doorstep delivery across Sri Lanka with Cash on Delivery and Direct Bank Transfer support.
             </p>
             <Link
               to="/shop"

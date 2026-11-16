@@ -104,23 +104,33 @@ export const Footer: FC = () => {
         </div>
 
         <div>
-          <h5 className="font-outfit text-[#26352D] font-semibold mb-4 text-base">IJSE RAD Coursework</h5>
-          <p className="text-xs text-[#718078] mb-2">
-            Graduate Diploma in Software Engineering (GDSE)
-          </p>
-          <p className="text-xs text-[#718078]">
-            ITS2020 Rapid Application Development Capstone Project
-          </p>
+          <h5 className="font-outfit text-[#26352D] font-semibold mb-4 text-base">Showroom & Support</h5>
+          <div className="space-y-2.5 text-xs text-[#718078]">
+            <div>
+              <span className="font-semibold text-[#26352D] block">Flagship Showroom</span>
+              <span>Galle Road, Colombo 03, Sri Lanka</span>
+            </div>
+            <div>
+              <span className="font-semibold text-[#26352D] block">Operating Hours</span>
+              <span>Mon – Sat: 9:00 AM – 8:00 PM</span><br />
+              <span>Sunday: 10:00 AM – 6:00 PM</span>
+            </div>
+            <div>
+              <span className="font-semibold text-[#26352D] block">Payment Methods</span>
+              <span>Cash on Delivery (COD) &bull; Bank Transfer</span>
+            </div>
+          </div>
           <div className="mt-4 pt-4 border-t border-[#DCEBE0]">
-            <span className="inline-block bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-xs font-semibold px-3 py-1 rounded-full">
-              Phase 4: Customer Storefront Live
+            <span className="inline-flex items-center gap-1.5 bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-xs font-semibold px-3 py-1 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-[#72C98A] animate-pulse"></span>
+              Island-Wide Delivery Active
             </span>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-[#DCEBE0] text-center text-xs text-[#718078]">
-        &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved. Prices strictly in Sri Lankan Rupees (LKR).
+        &copy; {new Date().getFullYear()} {APP_NAME} Footwear Sri Lanka. All rights reserved. Prices strictly in Sri Lankan Rupees (LKR).
       </div>
     </footer>
   );

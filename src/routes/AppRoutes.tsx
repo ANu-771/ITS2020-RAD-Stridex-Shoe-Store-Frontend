@@ -71,6 +71,14 @@ export const AppRoutes: FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Role-Protected Inventory Management Dashboard */}
         <Route

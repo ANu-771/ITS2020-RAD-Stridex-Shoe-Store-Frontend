@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   ShieldCheck, 
   Users, 
@@ -14,7 +14,8 @@ import {
   Star,
   TicketPercent,
   FileText,
-  Gift
+  Gift,
+  UserCog
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
@@ -27,6 +28,7 @@ import { AdminCategoriesPage } from '../admin/AdminCategoriesPage';
 import { AdminBrandsPage } from '../admin/AdminBrandsPage';
 import { AdminOrdersPage } from '../admin/AdminOrdersPage';
 import { AdminCustomersPage } from '../admin/AdminCustomersPage';
+import { AdminUsersPage } from '../admin/AdminUsersPage';
 import { AdminReviewsPage } from '../admin/AdminReviewsPage';
 import { AdminCouponsPage } from '../admin/AdminCouponsPage';
 import { AdminReportsPage } from '../admin/AdminReportsPage';
@@ -39,6 +41,7 @@ type AdminTab =
   | 'brands'
   | 'orders'
   | 'customers'
+  | 'users'
   | 'reviews'
   | 'coupons'
   | 'reports'
@@ -51,6 +54,7 @@ const VALID_TABS: AdminTab[] = [
   'brands',
   'orders',
   'customers',
+  'users',
   'reviews',
   'coupons',
   'reports',
@@ -63,17 +67,23 @@ export const AdminDashboardPage: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAppSelector((state) => state.auth);
 
-  const initialTab = (searchParams.get('tab') as AdminTab) || 'overview';
+  const location = useLocation();
+  const isUsersPath = location.pathname.includes('/admin/users');
+  const initialTab = isUsersPath ? 'users' : ((searchParams.get('tab') as AdminTab) || 'overview');
   const [activeTab, setActiveTab] = useState<AdminTab>(
     VALID_TABS.includes(initialTab) ? initialTab : 'overview'
   );
 
   useEffect(() => {
+    if (location.pathname.includes('/admin/users')) {
+      setActiveTab('users');
+      return;
+    }
     const tab = searchParams.get('tab') as AdminTab;
     if (tab && VALID_TABS.includes(tab)) {
       setActiveTab(tab);
     }
-  }, [searchParams]);
+  }, [searchParams, location.pathname]);
 
   const handleTabChange = (tab: AdminTab) => {
     setActiveTab(tab);
@@ -204,6 +214,18 @@ export const AdminDashboardPage: FC = () => {
           </button>
 
           <button
+            onClick={() => handleTabChange('users')}
+            className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2 cursor-pointer ${
+              activeTab === 'users'
+                ? 'bg-[#72C98A] text-white shadow-sm'
+                : 'text-[#718078] hover:text-[#26352D] hover:bg-[#F2FAF4]'
+            }`}
+          >
+            <UserCog className="w-4 h-4" />
+            <span>User Management</span>
+          </button>
+
+          <button
             onClick={() => handleTabChange('reviews')}
             className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2 cursor-pointer ${
               activeTab === 'reviews'
@@ -259,6 +281,7 @@ export const AdminDashboardPage: FC = () => {
         {activeTab === 'brands' && <AdminBrandsPage />}
         {activeTab === 'orders' && <AdminOrdersPage />}
         {activeTab === 'customers' && <AdminCustomersPage />}
+        {activeTab === 'users' && <AdminUsersPage />}
         {activeTab === 'reviews' && <AdminReviewsPage />}
         {activeTab === 'coupons' && <AdminCouponsPage />}
         {activeTab === 'reports' && <AdminReportsPage />}
