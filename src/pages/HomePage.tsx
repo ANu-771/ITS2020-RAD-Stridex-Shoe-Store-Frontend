@@ -16,6 +16,7 @@ import {
 import { ShoeAvatarIcon } from '../components/common/ShoeAvatarIcon';
 import heroShoe from '../assets/home_page_shoe.png';
 import { HeroVideoBackground } from '../components/home/HeroVideoBackground';
+import { BrandMarqueeBanner } from '../components/home/BrandMarqueeBanner';
 import { productService } from '../services/productService';
 import { brandService } from '../services/brandService';
 import { categoryService } from '../services/categoryService';
@@ -505,40 +506,24 @@ export const HomePage: FC = () => {
       )}
 
       {/* ======================================================== */}
-      {/* 5. POPULAR PARTNER BRANDS                                */}
+      {/* 5. BRAND PARTNERS INFINITE MARQUEE BANNER                 */}
       {/* ======================================================== */}
-      <section className="py-16 bg-[#EAF6ED]/60 border-y border-[#DCEBE0]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-16 bg-[#EAF6ED]/60 border-y border-[#DCEBE0] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8">
           <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-2">
+            <ShoeAvatarIcon className="w-3.5 h-3.5" />
             <span>Official Sri Lanka Partners</span>
           </div>
-          <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D] mb-10">
+          <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">
             Engineered By Global Leaders
           </h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-            {brands.map((b) => (
-              <Link
-                key={b.id}
-                to={`/shop?brand=${b.slug}`}
-                className="group p-6 rounded-2xl bg-white border border-[#DCEBE0] hover:border-[#72C98A] shadow-xs hover:shadow-md transition-all flex flex-col items-center justify-center space-y-3"
-              >
-                <div className="w-14 h-14 rounded-xl bg-[#F2FAF4] flex items-center justify-center p-2 group-hover:scale-110 transition-transform">
-                  {b.logo ? (
-                    <img src={b.logo} alt={b.name} className="max-w-full max-h-full object-contain" />
-                  ) : (
-                    <span className="font-outfit font-extrabold text-sm text-[#26352D] uppercase">
-                      {b.name.substring(0, 3)}
-                    </span>
-                  )}
-                </div>
-                <span className="font-outfit font-bold text-sm text-[#26352D] group-hover:text-[#72C98A] transition-colors">
-                  {b.name}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <p className="text-[#718078] text-xs sm:text-sm mt-1 max-w-xl mx-auto">
+            Authorized partnerships bringing authenticated performance and lifestyle footwear directly to Sri Lanka.
+          </p>
         </div>
+
+        {/* Continuous Looping Brand Marquee Track */}
+        <BrandMarqueeBanner brands={brands} />
       </section>
 
       {/* ======================================================== */}
