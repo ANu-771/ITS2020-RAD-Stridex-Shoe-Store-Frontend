@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![STRIDEX Footwear](src/assets/STRIDEX%20Studio%20Sneaker%20Portrait.png)
+![STRIDEX Footwear]
 
 ### *Step Into Your Style*
 **A High-Performance, Luxury Footwear E-Commerce Web Platform**  
