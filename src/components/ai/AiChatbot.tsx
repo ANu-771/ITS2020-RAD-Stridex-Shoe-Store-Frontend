@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ChatMessage } from '../../types/ai.types';
 import { aiService } from '../../services/aiService';
+import { useAppSelector } from '../../hooks/reduxHooks';
 import { SneakerMascotAvatar } from './SneakerMascotAvatar';
 import { AiChatWindow } from './AiChatWindow';
 
@@ -12,12 +13,15 @@ const INITIAL_WELCOME_MESSAGE: ChatMessage = {
 };
 
 export const AiChatbot: React.FC = () => {
+  const { user } = useAppSelector((state) => state.auth);
+  const storageKey = user?.id ? `stridex_chat_messages_${user.id}` : 'stridex_chat_messages_guest';
+
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     try {
-      const saved = sessionStorage.getItem('stridex_chat_messages');
+      const saved = sessionStorage.getItem(storageKey);
       if (saved) {
         return JSON.parse(saved);
       }
@@ -27,14 +31,28 @@ export const AiChatbot: React.FC = () => {
     return [INITIAL_WELCOME_MESSAGE];
   });
 
-  // Sync messages to sessionStorage for page persistence during session
+  // When active user changes (e.g. login or logout), switch conversation memory to that user
   useEffect(() => {
     try {
-      sessionStorage.setItem('stridex_chat_messages', JSON.stringify(messages));
+      const saved = sessionStorage.getItem(storageKey);
+      if (saved) {
+        setMessages(JSON.parse(saved));
+        return;
+      }
+    } catch {
+      // Fallback
+    }
+    setMessages([INITIAL_WELCOME_MESSAGE]);
+  }, [storageKey]);
+
+  // Sync messages to sessionStorage under isolated user key
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(messages));
     } catch {
       // Ignore sessionStorage limits
     }
-  }, [messages]);
+  }, [messages, storageKey]);
 
   const handleToggleOpen = () => {
     setIsOpen((prev) => {
@@ -56,7 +74,7 @@ export const AiChatbot: React.FC = () => {
     ];
     setMessages(fresh);
     try {
-      sessionStorage.removeItem('stridex_chat_messages');
+      sessionStorage.removeItem(storageKey);
     } catch {
       // Ignore
     }
@@ -76,8 +94,8 @@ export const AiChatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Format history (latest 6 messages prior to this user message)
-      const historyPayload = messages.slice(-6).map((m) => ({
+      // Format history (latest 5 exchanges = up to 10 messages prior to this user message)
+      const historyPayload = messages.slice(-10).map((m) => ({
         role: (m.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
         text: m.text,
       }));

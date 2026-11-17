@@ -30,6 +30,159 @@ const SUGGESTED_QUESTIONS = [
   'How can I place an order?',
 ];
 
+/**
+ * Parses inline markdown tokens (***bold-italic***, **bold**, *italic*, and `code`).
+ * Applies the stylish 'Outfit' font family to bold text for elegant typography.
+ */
+const renderInlineFormatting = (text: string, isUser: boolean): React.ReactNode[] => {
+  const tokens = text.split(/(\*\*\*[\s\S]+?\*\*\*|\*\*[\s\S]+?\*\*|\*[^\s*][^*]*?\*|`[^`]+?`)/g);
+
+  return tokens.map((token, i) => {
+    // Bold + Italic (***text***)
+    if (token.startsWith('***') && token.endsWith('***') && token.length >= 6) {
+      const content = token.slice(3, -3);
+      return (
+        <strong
+          key={i}
+          className={`font-outfit font-bold italic tracking-tight ${
+            isUser ? 'text-white' : 'text-[#15231B]'
+          }`}
+        >
+          {content}
+        </strong>
+      );
+    }
+    // Bold (**text**)
+    if (token.startsWith('**') && token.endsWith('**') && token.length >= 4) {
+      const content = token.slice(2, -2);
+      return (
+        <strong
+          key={i}
+          className={`font-outfit font-bold tracking-tight ${
+            isUser ? 'text-white' : 'text-[#15231B]'
+          }`}
+        >
+          {content}
+        </strong>
+      );
+    }
+    // Italic (*text*)
+    if (token.startsWith('*') && token.endsWith('*') && token.length >= 2) {
+      const content = token.slice(1, -1);
+      return (
+        <em key={i} className="italic">
+          {content}
+        </em>
+      );
+    }
+    // Inline Code (`code`)
+    if (token.startsWith('`') && token.endsWith('`') && token.length >= 2) {
+      const content = token.slice(1, -1);
+      return (
+        <code
+          key={i}
+          className={`px-1.5 py-0.5 rounded font-mono text-[11px] ${
+            isUser ? 'bg-white/20 text-white' : 'bg-[#DDF3E2] text-[#26352D]'
+          }`}
+        >
+          {content}
+        </code>
+      );
+    }
+    return token;
+  });
+};
+
+/**
+ * Formats multi-line chat messages into stylish paragraphs, bullet points, numbered lists, and headings.
+ */
+const renderFormattedMessageText = (rawText: string, isUser: boolean) => {
+  if (!rawText) return null;
+
+  const rawLines = rawText.split('\n');
+  const elements: React.ReactNode[] = [];
+
+  rawLines.forEach((line, idx) => {
+    const trimmed = line.trim();
+
+    // Empty line spacing
+    if (!trimmed) {
+      elements.push(<div key={`sp-${idx}`} className="h-1.5" />);
+      return;
+    }
+
+    // Bullet points: e.g. "- **Add a size**" or "* Item" or "• Item"
+    const bulletMatch = line.match(/^(\s*)([-*•+])\s+(.+)$/);
+    if (bulletMatch) {
+      const indent = bulletMatch[1].length > 0 ? 'ml-3' : '';
+      const content = bulletMatch[3];
+
+      elements.push(
+        <div key={`li-${idx}`} className={`flex items-start gap-2 my-0.5 ${indent}`}>
+          <span
+            className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+              isUser ? 'bg-white' : 'bg-[#72C98A]'
+            }`}
+          />
+          <div className="flex-1 leading-relaxed">
+            {renderInlineFormatting(content, isUser)}
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // Numbered list: e.g. "1. Step"
+    const numMatch = line.match(/^(\s*)(\d+)\.\s+(.+)$/);
+    if (numMatch) {
+      const num = numMatch[2];
+      const content = numMatch[3];
+
+      elements.push(
+        <div key={`num-${idx}`} className="flex items-start gap-2 my-0.5">
+          <span
+            className={`font-outfit font-bold text-xs mt-0.5 shrink-0 ${
+              isUser ? 'text-white' : 'text-[#72C98A]'
+            }`}
+          >
+            {num}.
+          </span>
+          <div className="flex-1 leading-relaxed">
+            {renderInlineFormatting(content, isUser)}
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // Heading: e.g. "### Title"
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    if (headingMatch) {
+      const content = headingMatch[2];
+      elements.push(
+        <div
+          key={`h-${idx}`}
+          className={`font-outfit font-bold text-xs sm:text-[13px] mt-1.5 mb-0.5 ${
+            isUser ? 'text-white' : 'text-[#17221C]'
+          }`}
+        >
+          {renderInlineFormatting(content, isUser)}
+        </div>
+      );
+      return;
+    }
+
+    // Regular paragraph
+    elements.push(
+      <p key={`p-${idx}`} className="leading-relaxed">
+        {renderInlineFormatting(line, isUser)}
+      </p>
+    );
+  });
+
+  return <div className="space-y-0.5 break-words">{elements}</div>;
+};
+
 export const AiChatWindow: React.FC<AiChatWindowProps> = ({
   isOpen,
   onClose,
@@ -90,7 +243,7 @@ export const AiChatWindow: React.FC<AiChatWindowProps> = ({
 
           <div>
             <div className="flex items-center gap-1.5">
-              <h3 className="font-heading font-bold text-sm tracking-wide text-white">
+              <h3 className="font-outfit font-bold text-sm tracking-wide text-white">
                 STRIDEX AI Assistant
               </h3>
               <span className="bg-[#72C98A]/20 text-[#72C98A] text-[9px] font-extrabold px-1.5 py-0.2 rounded uppercase tracking-wider border border-[#72C98A]/30">
@@ -208,7 +361,9 @@ export const AiChatWindow: React.FC<AiChatWindowProps> = ({
                       : 'bg-white border border-[#DCEBE0] text-[#26352D] rounded-bl-xs'
                   }`}
                 >
-                  <div className="whitespace-pre-wrap break-words">{msg.text}</div>
+                  <div className="break-words">
+                    {renderFormattedMessageText(msg.text, isUser)}
+                  </div>
                 </div>
               </div>
 

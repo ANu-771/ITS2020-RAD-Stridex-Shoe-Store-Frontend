@@ -4,7 +4,7 @@ import type { ChatApiResponse } from '../types/ai.types';
 export const aiService = {
   /**
    * Send a message to the STRIDEX AI Shopping Assistant.
-   * Sends the current user message and up to the 6 most recent history items.
+   * Sends the current user message and up to the 10 most recent history items (5 exchanges).
    */
   async sendMessage(
     message: string,
@@ -15,7 +15,7 @@ export const aiService = {
         '/ai/chat',
         {
           message: message.trim(),
-          history: history.slice(-6),
+          history: history.slice(-10),
         },
         {
           timeout: 25000, // 25s timeout for AI generation

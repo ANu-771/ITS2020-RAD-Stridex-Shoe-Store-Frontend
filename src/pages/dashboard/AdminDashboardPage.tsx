@@ -15,7 +15,8 @@ import {
   TicketPercent,
   FileText,
   Gift,
-  UserCog
+  UserCog,
+  Bot
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks/reduxHooks';
 import { logout } from '../../store/slices/authSlice';
@@ -33,6 +34,7 @@ import { AdminReviewsPage } from '../admin/AdminReviewsPage';
 import { AdminCouponsPage } from '../admin/AdminCouponsPage';
 import { AdminReportsPage } from '../admin/AdminReportsPage';
 import { AdminVouchersPage } from '../admin/AdminVouchersPage';
+import { AdminBotControlsPage } from '../admin/AdminBotControlsPage';
 
 type AdminTab = 
   | 'overview'
@@ -45,7 +47,8 @@ type AdminTab =
   | 'reviews'
   | 'coupons'
   | 'reports'
-  | 'vouchers';
+  | 'vouchers'
+  | 'bot-controls';
 
 const VALID_TABS: AdminTab[] = [
   'overview',
@@ -58,7 +61,8 @@ const VALID_TABS: AdminTab[] = [
   'reviews',
   'coupons',
   'reports',
-  'vouchers'
+  'vouchers',
+  'bot-controls'
 ];
 
 export const AdminDashboardPage: FC = () => {
@@ -272,6 +276,18 @@ export const AdminDashboardPage: FC = () => {
             <Gift className="w-4 h-4" />
             <span>Vouchers</span>
           </button>
+
+          <button
+            onClick={() => handleTabChange('bot-controls')}
+            className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2 cursor-pointer ${
+              activeTab === 'bot-controls'
+                ? 'bg-[#72C98A] text-white shadow-sm'
+                : 'text-[#718078] hover:text-[#26352D] hover:bg-[#F2FAF4]'
+            }`}
+          >
+            <Bot className="w-4 h-4" />
+            <span>Bot Controls</span>
+          </button>
         </div>
 
         {/* Tab Content Display */}
@@ -286,6 +302,7 @@ export const AdminDashboardPage: FC = () => {
         {activeTab === 'coupons' && <AdminCouponsPage />}
         {activeTab === 'reports' && <AdminReportsPage />}
         {activeTab === 'vouchers' && <AdminVouchersPage />}
+        {activeTab === 'bot-controls' && <AdminBotControlsPage />}
       </div>
     </div>
   );
