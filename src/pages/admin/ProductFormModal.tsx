@@ -69,8 +69,8 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
     } else {
       // Default new product values
       setName('');
-      setBrandId(brands[0]?.id || '');
-      setCategoryId(categories[0]?.id || '');
+      setBrandId('');
+      setCategoryId('');
       setBasePrice(25000);
       setDiscountPrice(0);
       setGender('UNISEX');
@@ -188,6 +188,14 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
 
   if (!isOpen) return null;
 
+  const sortedBrands = [...brands].sort((a, b) => {
+    const aIsOther = a.name.toLowerCase() === 'other' || a.slug === 'other';
+    const bIsOther = b.name.toLowerCase() === 'other' || b.slug === 'other';
+    if (aIsOther) return 1;
+    if (bIsOther) return -1;
+    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+  });
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-[#DCEBE0] shadow-2xl max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
@@ -262,7 +270,7 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[#DCEBE0] bg-white text-[#26352D] focus:outline-none focus:border-[#72C98A]"
               >
                 <option value="">Select Brand</option>
-                {brands.map((b) => (
+                {sortedBrands.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
