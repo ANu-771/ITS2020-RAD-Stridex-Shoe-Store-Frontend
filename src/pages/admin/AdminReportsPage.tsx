@@ -13,8 +13,7 @@ import {
   AlertTriangle,
   XCircle,
   Tag,
-  Clock,
-  Sparkles
+  Clock
 } from 'lucide-react';
 import { adminDashboardService } from '../../services/adminDashboardService';
 import type { SalesReportData, InventoryValuationData, SalesReportFilterParams } from '../../services/adminDashboardService';
@@ -349,7 +348,7 @@ export const AdminReportsPage: FC = () => {
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-[#72C98A]" />
+                  <TrendingUp className="w-4 h-4 text-[#72C98A]" />
                   <h4 className="font-bold text-[#26352D] text-sm">Best-Selling Footwear in Selected Range</h4>
                 </div>
                 <span className="text-[11px] text-[#718078]">Ranked by units sold</span>

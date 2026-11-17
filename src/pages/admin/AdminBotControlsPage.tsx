@@ -3,7 +3,6 @@ import type { FC } from 'react';
 import {
   Bot,
   Zap,
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   AlertCircle,
@@ -110,7 +109,7 @@ export const AdminBotControlsPage: FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 {primaryProvider === 'gemini' ? (
-                  <Sparkles className="w-5 h-5 text-[#2E7D32]" />
+                  <Bot className="w-5 h-5 text-[#2E7D32]" />
                 ) : (
                   <Zap className="w-5 h-5 text-[#F59E0B]" />
                 )}
@@ -129,7 +128,7 @@ export const AdminBotControlsPage: FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 {backupProvider === 'gemini' ? (
-                  <Sparkles className="w-5 h-5 text-[#2E7D32]" />
+                  <Bot className="w-5 h-5 text-[#2E7D32]" />
                 ) : (
                   <Zap className="w-5 h-5 text-[#F59E0B]" />
                 )}
@@ -203,7 +202,7 @@ export const AdminBotControlsPage: FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-xl bg-[#DDF3E2] flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-[#2E7D32]" />
+                      <Bot className="w-5 h-5 text-[#2E7D32]" />
                     </div>
                     <div>
                       <h4 className="font-bold text-[#26352D] text-sm flex items-center gap-1.5">
@@ -335,19 +334,29 @@ export const AdminBotControlsPage: FC = () => {
                 </p>
               </div>
 
-              {/* Custom Toggle Switch */}
-              <label className="relative inline-flex items-center cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={fallbackEnabled}
-                  onChange={(e) => setFallbackEnabled(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-13 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#72C98A]"></div>
-                <span className="ml-3 text-xs font-bold text-[#26352D]">
+              {/* Bulletproof Toggle Switch */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={fallbackEnabled}
+                onClick={() => setFallbackEnabled(!fallbackEnabled)}
+                className="inline-flex items-center gap-3 cursor-pointer select-none p-1 rounded-2xl hover:bg-[#F2FAF4] transition-colors focus:outline-none shrink-0"
+              >
+                <div
+                  className={`w-12 h-7 rounded-full p-1 transition-colors duration-200 ease-in-out shrink-0 relative ${
+                    fallbackEnabled ? 'bg-[#72C98A]' : 'bg-gray-300'
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                      fallbackEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </div>
+                <span className="text-xs font-bold text-[#26352D] select-none whitespace-nowrap">
                   {fallbackEnabled ? 'Automatic Backup Enabled' : 'Automatic Backup Disabled'}
                 </span>
-              </label>
+              </button>
             </div>
 
             <div className="p-4 rounded-2xl bg-[#F2FAF4] border border-[#DDF3E2] text-xs text-[#26352D] space-y-1.5">
