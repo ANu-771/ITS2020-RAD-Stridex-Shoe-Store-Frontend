@@ -51,6 +51,56 @@ const REVIEWS = [
   },
 ];
 
+interface AnimatedCounterProps {
+  end: number;
+  duration?: number;
+  decimals?: number;
+  suffix?: string;
+}
+
+const AnimatedCounter: FC<AnimatedCounterProps> = ({
+  end,
+  duration = 1800,
+  decimals = 0,
+  suffix = '',
+}) => {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    let startTime: number | null = null;
+    let animationFrameId: number;
+
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // easeOutExpo easing curve for smooth deceleration
+      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setValue(ease * end);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        setValue(end);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [end, duration]);
+
+  const formatted = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString();
+
+  return (
+    <>
+      {formatted}
+      {suffix}
+    </>
+  );
+};
+
 export const HomePage: FC = () => {
   const { showToast } = useToast();
   const heroRef = useRef<HTMLElement | null>(null);
@@ -216,15 +266,21 @@ export const HomePage: FC = () => {
               {/* Statistics */}
               <div className="pt-5 mt-4 border-t border-[#DCEBE0] max-w-lg mx-auto lg:mx-0 grid grid-cols-3 gap-6">
                 <div>
-                  <div className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">500+</div>
+                  <div className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D] tabular-nums">
+                    <AnimatedCounter end={500} suffix="+" duration={1800} />
+                  </div>
                   <div className="text-xs text-[#718078] font-medium mt-0.5">Curated Pairs</div>
                 </div>
                 <div>
-                  <div className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">100%</div>
+                  <div className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D] tabular-nums">
+                    <AnimatedCounter end={100} suffix="%" duration={1800} />
+                  </div>
                   <div className="text-xs text-[#718078] font-medium mt-0.5">Authentic Pairs</div>
                 </div>
                 <div>
-                  <div className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">4.9 / 5</div>
+                  <div className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D] tabular-nums">
+                    <AnimatedCounter end={4.9} decimals={1} duration={1800} /> / 5
+                  </div>
                   <div className="text-xs text-[#718078] font-medium mt-0.5">Customer Rating</div>
                 </div>
               </div>
