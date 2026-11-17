@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const defaultBaseUrl = import.meta.env.PROD
+  ? 'https://stridex-backend-mkkz.onrender.com/api/v1'
+  : 'http://localhost:3000/api/v1';
+
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || defaultBaseUrl;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -39,7 +45,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const res = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );

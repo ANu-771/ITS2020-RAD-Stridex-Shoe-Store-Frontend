@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /profile
+Disallow: /orders
+Disallow: /checkout
+Disallow: /cart
+
+Sitemap: https://stridex-shoes.vercel.app/sitemap.xml
