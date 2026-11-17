@@ -310,24 +310,33 @@ export const GiftVouchersPage: FC = () => {
             </div>
 
             {/* Visual Voucher Mockup Card */}
-            <div className="mt-6 rounded-2xl bg-gradient-to-r from-[#26352D] to-[#0B2D52] p-6 text-white shadow-lg space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="font-outfit font-extrabold text-lg tracking-wider text-[#72C98A]">
-                  STRIDEX
+            <div className="relative overflow-hidden mt-6 rounded-2xl bg-[linear-gradient(110deg,#13301D_0%,#1B432A_22%,#238F0D_55%,#3EAA63_82%,#5BB877_100%)] p-6 text-white border border-[#BDECCB]/50 shadow-[0_15px_35px_rgba(35,143,13,0.28),0_0_25px_rgba(114,201,138,0.22)] space-y-4">
+              {/* Light Green Corner Glow Tints */}
+              <div className="absolute -left-10 -top-10 w-40 h-40 bg-[#72C98A]/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#238F0D]/25 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="relative z-10 flex justify-between items-center">
+                <span className="font-outfit font-extrabold text-lg tracking-wider text-[#A8F0BE] flex items-center space-x-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#72C98A] animate-pulse" />
+                  <span>
+                    STRIDEX<span className="text-[#72C98A]">.</span>
+                  </span>
                 </span>
-                <span className="text-[10px] tracking-widest uppercase font-mono text-gray-300">
+                <span className="text-[10px] tracking-widest uppercase font-mono text-[#A8F0BE] bg-black/25 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15 shadow-2xs">
                   DIGITAL VOUCHER
                 </span>
               </div>
-              <div>
-                <p className="text-xs text-gray-300">Voucher Denomination</p>
-                <p className="font-outfit font-extrabold text-3xl text-white">
+              <div className="relative z-10">
+                <p className="text-xs font-medium text-[#DCEBE0]">Voucher Denomination</p>
+                <p className="font-outfit font-extrabold text-3xl sm:text-4xl text-white tracking-tight drop-shadow-sm mt-0.5">
                   {formatLKR(selectedAmount)}
                 </p>
               </div>
-              <div className="pt-2 border-t border-white/10 flex justify-between items-center text-[11px] text-gray-300">
+              <div className="relative z-10 pt-2 border-t border-white/15 flex justify-between items-center text-[11px] text-[#DCEBE0]">
                 <span>Code issued after bank verification</span>
-                <span className="font-semibold text-[#72C98A]">Valid 1 Year</span>
+                <span className="font-semibold text-[#A8F0BE] bg-black/20 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/10">
+                  Valid 1 Year
+                </span>
               </div>
             </div>
 

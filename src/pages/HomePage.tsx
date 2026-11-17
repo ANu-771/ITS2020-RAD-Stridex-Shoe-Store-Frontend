@@ -24,45 +24,6 @@ import { ProductCard } from '../components/shop/ProductCard';
 import { ProductSkeleton } from '../components/shop/ProductSkeleton';
 import { useToast } from '../context/ToastContext';
 
-interface CategoryCard {
-  title: string;
-  slug: string;
-  tagline: string;
-  badge: string;
-  imageUrl: string;
-}
-
-const CATEGORIES: CategoryCard[] = [
-  {
-    title: 'Performance Running',
-    slug: 'running-athletic',
-    tagline: 'Engineered for speed, built for distance with responsive energy return.',
-    badge: 'Popular',
-    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80',
-  },
-  {
-    title: 'Street & Casual Sneakers',
-    slug: 'casual-sneakers',
-    tagline: 'Iconic silhouettes crafted for all-day comfort and trendsetting aesthetics.',
-    badge: 'Trending',
-    imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=700&q=80',
-  },
-  {
-    title: 'Executive & Formal',
-    slug: 'formal-leather',
-    tagline: 'Refined leather classics meticulously crafted for timeless sophistication.',
-    badge: 'Premium',
-    imageUrl: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=700&q=80',
-  },
-  {
-    title: 'Limited Release Drops',
-    slug: 'limited-edition',
-    tagline: 'Rare collector sneakers and exclusive designer athletic collaborations.',
-    badge: 'Exclusive',
-    imageUrl: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=700&q=80',
-  },
-];
-
 const REVIEWS = [
   {
     name: 'Dilshan Silva',
@@ -144,32 +105,32 @@ export const HomePage: FC = () => {
     const fetchHomeData = async () => {
       setIsLoading(true);
       try {
-        const [trendingRes, newestRes, brandsRes, catsRes] = await Promise.all([
+        const [trendingRes, newestRes, brandsRes, catsRes] = await Promise.allSettled([
           productService.getAll({ featured: true, limit: 4 }),
           productService.getAll({ sort: 'newest', limit: 4 }),
           brandService.getAll({ active: true }),
           categoryService.getAll({ active: true }),
         ]);
 
-        if (trendingRes.success) {
-          setTrendingShoes(trendingRes.data);
+        if (trendingRes.status === 'fulfilled' && trendingRes.value.success) {
+          setTrendingShoes(trendingRes.value.data);
           // Shoes with discount price for special offers
-          const discounted = trendingRes.data.filter(
+          const discounted = trendingRes.value.data.filter(
             (p) => p.discountPrice && p.discountPrice < p.basePrice
           );
-          setSpecialOffers(discounted.length > 0 ? discounted : trendingRes.data.slice(0, 4));
+          setSpecialOffers(discounted.length > 0 ? discounted : trendingRes.value.data.slice(0, 4));
         }
 
-        if (newestRes.success) {
-          setNewArrivals(newestRes.data);
+        if (newestRes.status === 'fulfilled' && newestRes.value.success) {
+          setNewArrivals(newestRes.value.data);
         }
 
-        if (brandsRes.success) {
-          setBrands(brandsRes.data);
+        if (brandsRes.status === 'fulfilled' && brandsRes.value.success) {
+          setBrands(brandsRes.value.data);
         }
 
-        if (catsRes.success) {
-          setCategories(catsRes.data);
+        if (catsRes.status === 'fulfilled' && catsRes.value.success) {
+          setCategories(catsRes.value.data);
         }
       } catch (err) {
         console.error('Failed to load homepage data', err);
@@ -181,15 +142,12 @@ export const HomePage: FC = () => {
     fetchHomeData();
   }, []);
 
-  const displayCategories = categories.length > 0
-    ? categories.slice(0, 4).map((c, i) => ({
-        title: c.name,
-        slug: c.slug,
-        tagline: c.description || CATEGORIES[i % CATEGORIES.length].tagline,
-        badge: CATEGORIES[i % CATEGORIES.length].badge,
-        imageUrl: c.image || CATEGORIES[i % CATEGORIES.length].imageUrl,
-      }))
-    : CATEGORIES;
+  // Directly derive featured categories from the backend database (isFeatured or first 4 active)
+  const featuredCategories = (
+    categories.filter((c) => c.isFeatured).length > 0
+      ? categories.filter((c) => c.isFeatured)
+      : categories
+  ).slice(0, 4);
 
   const handleNewsletterSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -331,40 +289,66 @@ export const HomePage: FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayCategories.map((cat, idx) => (
-            <Link
-              key={idx}
-              to={`/category/${cat.slug}`}
-              className="group relative bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-[#DCEBE0] hover:border-[#72C98A] hover:-translate-y-1 flex flex-col justify-between"
-            >
-              <div className="relative h-56 w-full overflow-hidden bg-[#F2FAF4]">
-                <img
-                  src={cat.imageUrl}
-                  alt={cat.title}
-                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                />
-                <span className="absolute top-3 right-3 bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-xs">
-                  {cat.badge}
-                </span>
-              </div>
-
-              <div className="p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-outfit font-bold text-lg text-[#26352D] group-hover:text-[#72C98A] transition-colors">
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs text-[#718078] mt-1.5 leading-relaxed font-sans">
-                    {cat.tagline}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-[#DCEBE0] flex items-center justify-between text-xs font-semibold text-[#72C98A]">
-                  <span>Explore Shoes</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl overflow-hidden border border-[#DCEBE0] shadow-xs animate-pulse flex flex-col justify-between"
+              >
+                <div className="h-56 w-full bg-[#E3EFE7]" />
+                <div className="p-5 space-y-3">
+                  <div className="h-5 bg-[#D5E6DB] rounded-md w-3/4" />
+                  <div className="h-3 bg-[#E3EFE7] rounded-md w-full" />
+                  <div className="h-3 bg-[#E3EFE7] rounded-md w-2/3" />
+                  <div className="mt-4 pt-3 border-t border-[#DCEBE0] flex justify-between items-center">
+                    <div className="h-3 bg-[#D5E6DB] rounded-md w-20" />
+                    <div className="w-3.5 h-3.5 bg-[#D5E6DB] rounded-full" />
+                  </div>
                 </div>
               </div>
-            </Link>
-          ))}
+            ))
+          ) : featuredCategories.length > 0 ? (
+            featuredCategories.map((cat) => (
+              <Link
+                key={cat.id || cat.slug}
+                to={`/category/${cat.slug}`}
+                className="group relative bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-[#DCEBE0] hover:border-[#72C98A] hover:-translate-y-1 flex flex-col justify-between"
+              >
+                <div className="relative h-56 w-full overflow-hidden bg-[#F2FAF4]">
+                  <img
+                    src={cat.image || cat.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80'}
+                    alt={cat.name}
+                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                  />
+                  {cat.badge && (
+                    <span className="absolute top-3 right-3 bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-xs">
+                      {cat.badge}
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-outfit font-bold text-lg text-[#26352D] group-hover:text-[#72C98A] transition-colors">
+                      {cat.name}
+                    </h3>
+                    <p className="text-xs text-[#718078] mt-1.5 leading-relaxed font-sans line-clamp-2">
+                      {cat.description || 'Handcrafted footwear line engineered for athletic performance and street style.'}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-[#DCEBE0] flex items-center justify-between text-xs font-semibold text-[#72C98A]">
+                    <span>Explore Shoes</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 text-[#718078] text-sm">
+              Discover curated shoe categories across STRIDEX.
+            </div>
+          )}
         </div>
       </section>
 

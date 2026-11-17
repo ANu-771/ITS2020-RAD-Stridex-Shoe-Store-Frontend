@@ -32,6 +32,8 @@ export interface Category {
   description?: string;
   image?: string;
   imageUrl?: string;
+  badge?: string;
+  isFeatured?: boolean;
   isActive: boolean;
   productCount?: number;
   createdAt?: string;

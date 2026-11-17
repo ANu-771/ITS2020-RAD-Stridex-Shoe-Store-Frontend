@@ -5,11 +5,13 @@ export interface CategoryPayload {
   name: string;
   description?: string;
   image?: string;
+  badge?: string;
+  isFeatured?: boolean;
   isActive?: boolean;
 }
 
 export const categoryService = {
-  getAll: async (params?: { active?: boolean; search?: string }): Promise<{ success: boolean; data: Category[] }> => {
+  getAll: async (params?: { active?: boolean; search?: string; featured?: boolean }): Promise<{ success: boolean; data: Category[] }> => {
     const res = await api.get('/categories', { params });
     return res.data;
   },

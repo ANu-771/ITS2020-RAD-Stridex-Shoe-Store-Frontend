@@ -27,6 +27,8 @@ export const AdminCategoriesPage: FC = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
+  const [badge, setBadge] = useState('');
+  const [isFeatured, setIsFeatured] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -58,6 +60,8 @@ export const AdminCategoriesPage: FC = () => {
     setName('');
     setDescription('');
     setImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80');
+    setBadge('');
+    setIsFeatured(false);
     setIsActive(true);
     setFormError(null);
     setIsModalOpen(true);
@@ -68,6 +72,8 @@ export const AdminCategoriesPage: FC = () => {
     setName(cat.name);
     setDescription(cat.description || '');
     setImage(cat.image || '');
+    setBadge(cat.badge || '');
+    setIsFeatured(Boolean(cat.isFeatured));
     setIsActive(cat.isActive);
     setFormError(null);
     setIsModalOpen(true);
@@ -81,6 +87,8 @@ export const AdminCategoriesPage: FC = () => {
       name: name.trim(),
       description: description.trim(),
       image: image.trim(),
+      badge: badge.trim(),
+      isFeatured,
       isActive,
     };
 
@@ -201,14 +209,26 @@ export const AdminCategoriesPage: FC = () => {
                 <div className="p-5 space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="font-outfit font-bold text-base text-[#26352D]">{cat.name}</h3>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                        cat.isActive ? 'bg-[#35A866]/15 text-[#35A866]' : 'bg-[#718078]/15 text-[#718078]'
-                      }`}
-                    >
-                      {cat.isActive ? 'Active' : 'Disabled'}
-                    </span>
+                    <div className="flex items-center space-x-1.5">
+                      {cat.isFeatured && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#72C98A]/20 text-[#26352D] border border-[#72C98A]/40">
+                          Featured
+                        </span>
+                      )}
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          cat.isActive ? 'bg-[#35A866]/15 text-[#35A866]' : 'bg-[#718078]/15 text-[#718078]'
+                        }`}
+                      >
+                        {cat.isActive ? 'Active' : 'Disabled'}
+                      </span>
+                    </div>
                   </div>
+                  {cat.badge && (
+                    <div className="inline-block px-2 py-0.5 rounded-full bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-[10px] font-semibold">
+                      Badge: {cat.badge}
+                    </div>
+                  )}
                   <p className="text-xs text-[#718078] line-clamp-2">{cat.description || 'No description provided.'}</p>
                   <div className="text-[10px] font-mono text-[#718078] pt-1">slug: /{cat.slug}</div>
                 </div>
@@ -274,15 +294,27 @@ export const AdminCategoriesPage: FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block font-semibold text-[#26352D] mb-1">Banner Image URL</label>
-                <input
-                  type="url"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2 rounded-xl border border-[#DCEBE0] bg-[#F2FAF4]/40 text-[#26352D] focus:outline-none focus:border-[#72C98A]"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="block font-semibold text-[#26352D] mb-1">Badge (e.g. Popular, Trending)</label>
+                  <input
+                    type="text"
+                    value={badge}
+                    onChange={(e) => setBadge(e.target.value)}
+                    placeholder="Popular / Trending / Premium"
+                    className="w-full px-3.5 py-2 rounded-xl border border-[#DCEBE0] bg-[#F2FAF4]/40 text-[#26352D] focus:outline-none focus:border-[#72C98A]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-[#26352D] mb-1">Banner Image URL</label>
+                  <input
+                    type="url"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full px-3.5 py-2 rounded-xl border border-[#DCEBE0] bg-[#F2FAF4]/40 text-[#26352D] focus:outline-none focus:border-[#72C98A]"
+                  />
+                </div>
               </div>
 
               <div>
@@ -296,15 +328,27 @@ export const AdminCategoriesPage: FC = () => {
                 />
               </div>
 
-              <label className="inline-flex items-center space-x-2 cursor-pointer pt-1">
-                <input
-                  type="checkbox"
-                  checked={isActive}
-                  onChange={(e) => setIsActive(e.target.checked)}
-                  className="w-4 h-4 text-[#72C98A] rounded border-[#DCEBE0]"
-                />
-                <span className="font-semibold text-[#26352D]">Active on Website</span>
-              </label>
+              <div className="flex flex-wrap items-center gap-4 pt-1">
+                <label className="inline-flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isFeatured}
+                    onChange={(e) => setIsFeatured(e.target.checked)}
+                    className="w-4 h-4 text-[#72C98A] rounded border-[#DCEBE0]"
+                  />
+                  <span className="font-semibold text-[#26352D]">Feature on Homepage</span>
+                </label>
+
+                <label className="inline-flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                    className="w-4 h-4 text-[#72C98A] rounded border-[#DCEBE0]"
+                  />
+                  <span className="font-semibold text-[#26352D]">Active on Website</span>
+                </label>
+              </div>
 
               <div className="pt-3 border-t border-[#DCEBE0] flex justify-end space-x-2">
                 <button
