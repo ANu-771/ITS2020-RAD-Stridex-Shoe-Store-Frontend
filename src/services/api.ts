@@ -6,7 +6,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true, // Send HTTP-only cookies on requests
-  timeout: 10000,
+  timeout: 50000, // 50-second buffer for cloud platform cold starts (e.g. Render.com free tier)
 });
 
 // Request interceptor: attach Bearer token if present
