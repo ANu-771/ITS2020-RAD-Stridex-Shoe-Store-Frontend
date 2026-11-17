@@ -57,7 +57,7 @@ export const AdminBrandsPage: FC = () => {
     setBrandToEdit(null);
     setName('');
     setDescription('');
-    setLogo('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&auto=format&fit=crop&q=80');
+    setLogo('');
     setIsActive(true);
     setFormError(null);
     setIsModalOpen(true);

@@ -76,9 +76,7 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
       setGender('UNISEX');
       setMaterial('');
       setDescription('');
-      setImages([
-        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80',
-      ]);
+      setImages([]);
       setIsFeatured(false);
       setIsActive(true);
     }
@@ -384,7 +382,7 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
               </label>
             </div>
 
-            {images.length > 0 && (
+            {images.length > 0 ? (
               <div className="flex flex-wrap gap-2 pt-2">
                 {images.map((img, i) => (
                   <div
@@ -402,6 +400,10 @@ export const ProductFormModal: FC<ProductFormModalProps> = ({
                   </div>
                 ))}
               </div>
+            ) : (
+              <p className="text-[11px] text-[#718078] italic pt-1">
+                No images added yet. Upload an image or paste a URL above.
+              </p>
             )}
           </div>
 

@@ -59,7 +59,7 @@ export const AdminCategoriesPage: FC = () => {
     setCategoryToEdit(null);
     setName('');
     setDescription('');
-    setImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80');
+    setImage('');
     setBadge('');
     setIsFeatured(false);
     setIsActive(true);
