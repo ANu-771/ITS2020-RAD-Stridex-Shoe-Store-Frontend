@@ -45,6 +45,79 @@ export interface AdminDashboardMetrics {
   lowStockAlerts: LowStockAlertItem[];
 }
 
+export interface SalesReportFilterParams {
+  startDate?: string;
+  endDate?: string;
+  range?: 'all' | 'today' | 'last7days' | 'last30days' | 'thisMonth';
+}
+
+export interface SalesReportData {
+  totalSalesRevenue: number;
+  totalOrders: number;
+  totalPairsSold: number;
+  averageOrderValue: number;
+  pendingRevenue: number;
+  pendingOrdersCount: number;
+  cancelledOrdersCount: number;
+  totalDiscountsGiven: number;
+  dateRange: {
+    startDate: string | null;
+    endDate: string | null;
+    range: string;
+  };
+  paymentMethodBreakdown: Array<{
+    method: string;
+    label: string;
+    orderCount: number;
+    revenue: number;
+  }>;
+  orderStatusBreakdown: Array<{
+    status: string;
+    count: number;
+  }>;
+  topSellingProducts: Array<{
+    productId: string;
+    name: string;
+    image: string;
+    pairsSold: number;
+    revenue: number;
+  }>;
+  dailyTrend: Array<{
+    date: string;
+    orders: number;
+    revenue: number;
+  }>;
+}
+
+export interface InventoryValuationData {
+  totalUnits: number;
+  totalValuation: number;
+  activeVariantsCount: number;
+  healthyStockCount: number;
+  lowStockCount: number;
+  outOfStockCount: number;
+  categoryBreakdown: Array<{
+    categoryId: string;
+    categoryName: string;
+    units: number;
+    valuation: number;
+  }>;
+  brandBreakdown: Array<{
+    brandId: string;
+    brandName: string;
+    units: number;
+    valuation: number;
+  }>;
+  topValuedProducts: Array<{
+    productId: string;
+    name: string;
+    image: string;
+    basePrice: number;
+    totalStock: number;
+    totalValuation: number;
+  }>;
+}
+
 export interface AdminCustomerItem {
   id: string;
   _id: string;
@@ -77,26 +150,17 @@ export const adminDashboardService = {
     return res.data;
   },
 
-  getSalesReport: async (): Promise<{
+  getSalesReport: async (params?: SalesReportFilterParams): Promise<{
     success: boolean;
-    data: {
-      totalSalesRevenue: number;
-      totalOrders: number;
-      totalPairsSold: number;
-      averageOrderValue: number;
-    };
+    data: SalesReportData;
   }> => {
-    const res = await api.get('/admin/reports/sales');
+    const res = await api.get('/admin/reports/sales', { params });
     return res.data;
   },
 
   getInventoryValuation: async (): Promise<{
     success: boolean;
-    data: {
-      totalUnits: number;
-      totalValuation: number;
-      activeVariantsCount: number;
-    };
+    data: InventoryValuationData;
   }> => {
     const res = await api.get('/admin/reports/inventory-valuation');
     return res.data;

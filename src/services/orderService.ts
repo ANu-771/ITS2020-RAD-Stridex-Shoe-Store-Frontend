@@ -115,6 +115,8 @@ export interface AdminOrdersParams {
   status?: string;
   paymentStatus?: string;
   paymentMethod?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export const orderService = {
