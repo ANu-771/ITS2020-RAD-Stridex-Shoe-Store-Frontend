@@ -22,6 +22,7 @@ import { categoryService } from '../services/categoryService';
 import type { Product, Brand, Category } from '../types';
 import { ProductCard } from '../components/shop/ProductCard';
 import { ProductSkeleton } from '../components/shop/ProductSkeleton';
+import { ScrollReveal } from '../components/common/ScrollReveal';
 import { useToast } from '../context/ToastContext';
 
 const REVIEWS = [
@@ -319,30 +320,32 @@ export const HomePage: FC = () => {
       {/* 2. FEATURED CATEGORIES SECTION                           */}
       {/* ======================================================== */}
       <section id="categories" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-2">
-              <TrendingUp className="w-4 h-4 text-[#59B976]" />
-              <span>Curated Collections</span>
+        <ScrollReveal direction="up">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-2">
+                <TrendingUp className="w-4 h-4 text-[#59B976]" />
+                <span>Curated Collections</span>
+              </div>
+              <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
+                Featured Categories
+              </h2>
+              <p className="text-[#718078] mt-2 max-w-xl text-sm sm:text-base">
+                Handpicked footwear lines crafted for athletic performance, street style pioneers, and modern professionals.
+              </p>
             </div>
-            <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
-              Featured Categories
-            </h2>
-            <p className="text-[#718078] mt-2 max-w-xl text-sm sm:text-base">
-              Handpicked footwear lines crafted for athletic performance, street style pioneers, and modern professionals.
-            </p>
-          </div>
 
-          <div className="mt-4 md:mt-0">
-            <Link
-              to="/shop"
-              className="inline-flex items-center text-sm font-semibold text-[#72C98A] hover:text-[#59B976] transition-colors"
-            >
-              <span>View all collections</span>
-              <ArrowRight className="ml-1.5 w-4 h-4" />
-            </Link>
+            <div className="mt-4 md:mt-0">
+              <Link
+                to="/shop"
+                className="inline-flex items-center text-sm font-semibold text-[#72C98A] hover:text-[#59B976] transition-colors"
+              >
+                <span>View all collections</span>
+                <ArrowRight className="ml-1.5 w-4 h-4" />
+              </Link>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading ? (
@@ -364,41 +367,42 @@ export const HomePage: FC = () => {
               </div>
             ))
           ) : featuredCategories.length > 0 ? (
-            featuredCategories.map((cat) => (
-              <Link
-                key={cat.id || cat.slug}
-                to={`/category/${cat.slug}`}
-                className="group relative bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-[#DCEBE0] hover:border-[#72C98A] hover:-translate-y-1 flex flex-col justify-between"
-              >
-                <div className="relative h-56 w-full overflow-hidden bg-[#F2FAF4]">
-                  <img
-                    src={cat.image || cat.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80'}
-                    alt={cat.name}
-                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                  />
-                  {cat.badge && (
-                    <span className="absolute top-3 right-3 bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-xs">
-                      {cat.badge}
-                    </span>
-                  )}
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-outfit font-bold text-lg text-[#26352D] group-hover:text-[#72C98A] transition-colors">
-                      {cat.name}
-                    </h3>
-                    <p className="text-xs text-[#718078] mt-1.5 leading-relaxed font-sans line-clamp-2">
-                      {cat.description || 'Handcrafted footwear line engineered for athletic performance and street style.'}
-                    </p>
+            featuredCategories.map((cat, idx) => (
+              <ScrollReveal key={cat.id || cat.slug} delay={idx * 100} direction="up" className="h-full">
+                <Link
+                  to={`/category/${cat.slug}`}
+                  className="group relative bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-[#DCEBE0] hover:border-[#72C98A] hover:-translate-y-1 flex flex-col justify-between h-full"
+                >
+                  <div className="relative h-56 w-full overflow-hidden bg-[#F2FAF4]">
+                    <img
+                      src={cat.image || cat.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80'}
+                      alt={cat.name}
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                    />
+                    {cat.badge && (
+                      <span className="absolute top-3 right-3 bg-[#DDF3E2] text-[#26352D] border border-[#BDECCB] text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-xs">
+                        {cat.badge}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#DCEBE0] flex items-center justify-between text-xs font-semibold text-[#72C98A]">
-                    <span>Explore Shoes</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <div className="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-outfit font-bold text-lg text-[#26352D] group-hover:text-[#72C98A] transition-colors">
+                        {cat.name}
+                      </h3>
+                      <p className="text-xs text-[#718078] mt-1.5 leading-relaxed font-sans line-clamp-2">
+                        {cat.description || 'Handcrafted footwear line engineered for athletic performance and street style.'}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-[#DCEBE0] flex items-center justify-between text-xs font-semibold text-[#72C98A]">
+                      <span>Explore Shoes</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </ScrollReveal>
             ))
           ) : (
             <div className="col-span-full text-center py-12 text-[#718078] text-sm">
@@ -413,28 +417,30 @@ export const HomePage: FC = () => {
       {/* ======================================================== */}
       <section className="py-16 bg-white border-y border-[#DCEBE0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
-            <div>
-              <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
-                <ShoeAvatarIcon className="w-4 h-4 text-[#72C98A]" />
-                <span>Trending Footwear Drops</span>
+          <ScrollReveal direction="up">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+              <div>
+                <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
+                  <ShoeAvatarIcon className="w-4 h-4 text-[#72C98A]" />
+                  <span>Trending Footwear Drops</span>
+                </div>
+                <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
+                  Most Wanted Shoes
+                </h2>
+                <p className="text-[#718078] text-sm mt-1">
+                  Top rated silhouettes engineered for responsive speed and unmatched comfort.
+                </p>
               </div>
-              <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
-                Most Wanted Shoes
-              </h2>
-              <p className="text-[#718078] text-sm mt-1">
-                Top rated silhouettes engineered for responsive speed and unmatched comfort.
-              </p>
-            </div>
 
-            <Link
-              to="/shop?filter=featured"
-              className="mt-4 md:mt-0 inline-flex items-center space-x-1 text-xs font-bold text-[#72C98A] hover:text-[#59B976]"
-            >
-              <span>Explore All Trending</span>
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
+              <Link
+                to="/shop?filter=featured"
+                className="mt-4 md:mt-0 inline-flex items-center space-x-1 text-xs font-bold text-[#72C98A] hover:text-[#59B976]"
+              >
+                <span>Explore All Trending</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </ScrollReveal>
 
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -444,8 +450,10 @@ export const HomePage: FC = () => {
             </div>
           ) : trendingShoes.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {trendingShoes.map((shoe) => (
-                <ProductCard key={shoe.id} product={shoe} />
+              {trendingShoes.map((shoe, idx) => (
+                <ScrollReveal key={shoe.id} delay={idx * 100} direction="up" className="h-full">
+                  <ProductCard product={shoe} />
+                </ScrollReveal>
               ))}
             </div>
           ) : (
@@ -460,28 +468,30 @@ export const HomePage: FC = () => {
       {/* 4. NEW ARRIVALS SECTION                                  */}
       {/* ======================================================== */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
-          <div>
-            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
-              <Zap className="w-4 h-4 text-[#72C98A]" />
-              <span>Just In</span>
+        <ScrollReveal direction="up">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+            <div>
+              <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
+                <Zap className="w-4 h-4 text-[#72C98A]" />
+                <span>Just In</span>
+              </div>
+              <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
+                New Arrivals
+              </h2>
+              <p className="text-[#718078] text-sm mt-1">
+                Fresh additions straight from official brand partners in Sri Lanka.
+              </p>
             </div>
-            <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
-              New Arrivals
-            </h2>
-            <p className="text-[#718078] text-sm mt-1">
-              Fresh additions straight from official brand partners in Sri Lanka.
-            </p>
-          </div>
 
-          <Link
-            to="/shop?sort=newest"
-            className="mt-4 md:mt-0 inline-flex items-center space-x-1 text-xs font-bold text-[#72C98A] hover:text-[#59B976]"
-          >
-            <span>View All New Additions</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
+            <Link
+              to="/shop?sort=newest"
+              className="mt-4 md:mt-0 inline-flex items-center space-x-1 text-xs font-bold text-[#72C98A] hover:text-[#59B976]"
+            >
+              <span>View All New Additions</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </ScrollReveal>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -491,8 +501,10 @@ export const HomePage: FC = () => {
           </div>
         ) : newArrivals.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {newArrivals.map((shoe) => (
-              <ProductCard key={shoe.id} product={shoe} />
+            {newArrivals.map((shoe, idx) => (
+              <ScrollReveal key={shoe.id} delay={idx * 100} direction="up" className="h-full">
+                <ProductCard product={shoe} />
+              </ScrollReveal>
             ))}
           </div>
         ) : (
@@ -508,32 +520,36 @@ export const HomePage: FC = () => {
       {specialOffers.length > 0 && (
         <section className="py-16 bg-white border-y border-[#DCEBE0]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
-              <div>
-                <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
-                  <Percent className="w-4 h-4 text-[#72C98A]" />
-                  <span>Limited Time Price Drops</span>
+            <ScrollReveal direction="up">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+                <div>
+                  <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-1">
+                    <Percent className="w-4 h-4 text-[#72C98A]" />
+                    <span>Limited Time Price Drops</span>
+                  </div>
+                  <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
+                    Special Offers in Sri Lanka
+                  </h2>
+                  <p className="text-[#718078] text-sm mt-1">
+                    Grab authentic pairs with exclusive discounts in Sri Lankan Rupees (LKR).
+                  </p>
                 </div>
-                <h2 className="font-outfit text-3xl sm:text-4xl font-extrabold text-[#26352D]">
-                  Special Offers in Sri Lanka
-                </h2>
-                <p className="text-[#718078] text-sm mt-1">
-                  Grab authentic pairs with exclusive discounts in Sri Lankan Rupees (LKR).
-                </p>
-              </div>
 
-              <Link
-                to="/shop?sort=price_asc"
-                className="mt-4 md:mt-0 inline-flex items-center space-x-1 text-xs font-bold text-[#72C98A] hover:text-[#59B976]"
-              >
-                <span>View All Offers</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
+                <Link
+                  to="/shop?sort=price_asc"
+                  className="mt-4 md:mt-0 inline-flex items-center space-x-1 text-xs font-bold text-[#72C98A] hover:text-[#59B976]"
+                >
+                  <span>View All Offers</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </ScrollReveal>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {specialOffers.map((shoe) => (
-                <ProductCard key={shoe.id} product={shoe} />
+              {specialOffers.map((shoe, idx) => (
+                <ScrollReveal key={shoe.id} delay={idx * 100} direction="up" className="h-full">
+                  <ProductCard product={shoe} />
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -544,21 +560,25 @@ export const HomePage: FC = () => {
       {/* 5. BRAND PARTNERS INFINITE MARQUEE BANNER                 */}
       {/* ======================================================== */}
       <section className="py-16 bg-[#EAF6ED]/60 border-y border-[#DCEBE0] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8">
-          <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-2">
-            <ShoeAvatarIcon className="w-3.5 h-3.5" />
-            <span>Official Sri Lanka Partners</span>
+        <ScrollReveal direction="up">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8">
+            <div className="inline-flex items-center space-x-2 text-xs font-bold text-[#72C98A] uppercase tracking-widest mb-2">
+              <ShoeAvatarIcon className="w-3.5 h-3.5" />
+              <span>Official Sri Lanka Partners</span>
+            </div>
+            <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">
+              Engineered By Global Leaders
+            </h2>
+            <p className="text-[#718078] text-xs sm:text-sm mt-1 max-w-xl mx-auto">
+              Authorized partnerships bringing authenticated performance and lifestyle footwear directly to Sri Lanka.
+            </p>
           </div>
-          <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">
-            Engineered By Global Leaders
-          </h2>
-          <p className="text-[#718078] text-xs sm:text-sm mt-1 max-w-xl mx-auto">
-            Authorized partnerships bringing authenticated performance and lifestyle footwear directly to Sri Lanka.
-          </p>
-        </div>
+        </ScrollReveal>
 
         {/* Continuous Looping Brand Marquee Track */}
-        <BrandMarqueeBanner brands={brands} />
+        <ScrollReveal delay={150} direction="up">
+          <BrandMarqueeBanner brands={brands} />
+        </ScrollReveal>
       </section>
 
       {/* ======================================================== */}
@@ -566,44 +586,47 @@ export const HomePage: FC = () => {
       {/* ======================================================== */}
       <section className="py-16 bg-white border-y border-[#DCEBE0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-            <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#72C98A] uppercase tracking-wider">
-              <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
-              <span>Sri Lanka Verified Customers</span>
+          <ScrollReveal direction="up">
+            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+              <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-[#72C98A] uppercase tracking-wider">
+                <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
+                <span>Sri Lanka Verified Customers</span>
+              </div>
+              <h2 className="font-outfit text-3xl font-extrabold text-[#26352D]">
+                Trusted by 10,000+ Footwear Enthusiasts
+              </h2>
             </div>
-            <h2 className="font-outfit text-3xl font-extrabold text-[#26352D]">
-              Trusted by 10,000+ Footwear Enthusiasts
-            </h2>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {REVIEWS.map((rev, idx) => (
-              <div
-                key={idx}
-                className="p-8 rounded-3xl bg-[#F2FAF4] border border-[#DCEBE0] flex flex-col justify-between space-y-4"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-1 text-amber-500">
-                    {Array.from({ length: rev.rating }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
+              <ScrollReveal key={idx} delay={idx * 150} direction="up" className="h-full">
+                <div
+                  className="p-8 rounded-3xl bg-[#F2FAF4] border border-[#DCEBE0] flex flex-col justify-between space-y-4 h-full"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-1 text-amber-500">
+                      {Array.from({ length: rev.rating }).map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#26352D] leading-relaxed italic">
+                      "{rev.comment}"
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-sm text-[#26352D] leading-relaxed italic">
-                    "{rev.comment}"
-                  </p>
-                </div>
 
-                <div className="pt-4 border-t border-[#DCEBE0] flex items-center justify-between text-xs">
-                  <div>
-                    <strong className="text-[#26352D] block font-outfit">{rev.name}</strong>
-                    <span className="text-[#718078]">{rev.city}</span>
+                  <div className="pt-4 border-t border-[#DCEBE0] flex items-center justify-between text-xs">
+                    <div>
+                      <strong className="text-[#26352D] block font-outfit">{rev.name}</strong>
+                      <span className="text-[#718078]">{rev.city}</span>
+                    </div>
+                    <span className="inline-flex items-center space-x-1 text-[#35A866] font-bold text-[11px]">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Verified</span>
+                    </span>
                   </div>
-                  <span className="inline-flex items-center space-x-1 text-[#35A866] font-bold text-[11px]">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Verified</span>
-                  </span>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -613,41 +636,43 @@ export const HomePage: FC = () => {
       {/* 8. NEWSLETTER SUBSCRIPTION SECTION                        */}
       {/* ======================================================== */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#DDF3E2] rounded-3xl border border-[#BDECCB] p-8 sm:p-14 text-center max-w-3xl mx-auto space-y-6">
-          <div className="w-14 h-14 rounded-2xl bg-white text-[#72C98A] flex items-center justify-center mx-auto shadow-xs">
-            <Mail className="w-7 h-7" />
-          </div>
+        <ScrollReveal direction="up" distance={32}>
+          <div className="bg-[#DDF3E2] rounded-3xl border border-[#BDECCB] p-8 sm:p-14 text-center max-w-3xl mx-auto space-y-6">
+            <div className="w-14 h-14 rounded-2xl bg-white text-[#72C98A] flex items-center justify-center mx-auto shadow-xs">
+              <Mail className="w-7 h-7" />
+            </div>
 
-          <div className="space-y-2">
-            <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">
-              Unlock 10% Off Your First Pair
-            </h2>
-            <p className="text-xs sm:text-sm text-[#718078] max-w-md mx-auto">
-              Subscribe to the STRIDEX insider newsletter for early access to limited sneaker releases, athlete reviews, and secret sales.
+            <div className="space-y-2">
+              <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[#26352D]">
+                Unlock 10% Off Your First Pair
+              </h2>
+              <p className="text-xs sm:text-sm text-[#718078] max-w-md mx-auto">
+                Subscribe to the STRIDEX insider newsletter for early access to limited sneaker releases, athlete reviews, and secret sales.
+              </p>
+            </div>
+
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                required
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                placeholder="Enter your email address..."
+                className="flex-1 px-4 py-3 rounded-xl bg-white border border-[#DCEBE0] focus:border-[#72C98A] focus:outline-none text-xs text-[#26352D]"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs rounded-xl shadow-sm transition-all"
+              >
+                Subscribe
+              </button>
+            </form>
+
+            <p className="text-[10px] text-[#718078]">
+              No spam guaranteed. You can unsubscribe anytime with one click.
             </p>
           </div>
-
-          <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              required
-              value={newsletterEmail}
-              onChange={(e) => setNewsletterEmail(e.target.value)}
-              placeholder="Enter your email address..."
-              className="flex-1 px-4 py-3 rounded-xl bg-white border border-[#DCEBE0] focus:border-[#72C98A] focus:outline-none text-xs text-[#26352D]"
-            />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-[#72C98A] hover:bg-[#59B976] text-white font-bold text-xs rounded-xl shadow-sm transition-all"
-            >
-              Subscribe
-            </button>
-          </form>
-
-          <p className="text-[10px] text-[#718078]">
-            No spam guaranteed. You can unsubscribe anytime with one click.
-          </p>
-        </div>
+        </ScrollReveal>
       </section>
     </div>
   );
