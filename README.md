@@ -29,12 +29,12 @@ The design system incorporates the signature **STRIDEX Light Green and Mint pale
 
 ## 🌐 Deployed Application URLs
 
-| Environment | Service | URL | Notes |
+| Environment | Service | Clickable URL | Notes |
 | :--- | :--- | :--- | :--- |
-| **Production** | **Web Storefront (Vercel)** | `https://stridex-footwear.vercel.app` | High-availability global edge deployment |
-| **Production** | **Backend API (Render)** | `https://stridex-api.onrender.com/api/v1` | Cloud REST service with auto cold-start tolerance |
-| **Local Development** | **Storefront (Vite)** | `http://localhost:5173` | Instant HMR development server |
-| **Local Development** | **API Service** | `http://localhost:3000/api/v1` | Local Node.js Express backend |
+| **Production** | **Web Storefront (Vercel)** | [https://stridex-shoes.vercel.app](https://stridex-shoes.vercel.app) | Production web storefront |
+| **Production** | **Backend API Server (Render)** | [https://stridex-backend-mkkz.onrender.com](https://stridex-backend-mkkz.onrender.com) | Live Node.js Express backend |
+| **Local Development** | **Storefront (Vite)** | [http://localhost:5173](http://localhost:5173) | Development HMR server |
+| **Local Development** | **Local API Service** | [http://localhost:3000](http://localhost:3000) | Local Express API server |
 
 ---
 
